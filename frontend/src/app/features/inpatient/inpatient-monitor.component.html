@@ -1,0 +1,209 @@
+<section class="care-banner ipd-banner">
+  <div>
+    <span class="care-kicker">INPATIENT CARE · IPD / ICU</span>
+    <h2>A connected view of every ward.</h2>
+    <p>Admissions, bed readiness and scheduled medication in one place.</p>
+  </div>
+  <button class="banner-button" (click)="open('beds')">
+    Open bed board ↗
+  </button>
+</section>
+<app-notice
+  [message]="warning"
+  kind="error"
+  (dismiss)="warning = ''"
+></app-notice>
+<div class="care-metrics">
+  <article>
+    <span class="metric-icon blue">⌂</span>
+    <div>
+      <small>Currently admitted</small><strong>{{ active.length }}</strong
+      ><span>Visible patient records</span>
+    </div>
+  </article>
+  <article>
+    <span class="metric-icon teal">▦</span>
+    <div>
+      <small>Available beds</small
+      ><strong>{{
+        countBed("AVAILABLE") === null ? "—" : countBed("AVAILABLE")
+      }}</strong
+      ><span>Selected ward capacity</span>
+    </div>
+  </article>
+  <article>
+    <span class="metric-icon amber">↗</span>
+    <div>
+      <small>Pending admission requests</small
+      ><strong>{{ pending === null ? "—" : pending }}</strong
+      ><button class="text-button" (click)="open('recommendations')">
+        Review requests →
+      </button>
+    </div>
+  </article>
+  <article>
+    <span class="metric-icon green">✓</span>
+    <div>
+      <small>Discharged today</small><strong>{{ dischargedToday }}</strong
+      ><span>Hospital date · IST</span>
+    </div>
+  </article>
+</div>
+<div class="ipd-monitor-grid">
+  <section class="care-panel">
+    <div class="care-panel-head">
+      <div>
+        <h2>
+          Patient census <span class="count-bubble">{{ filtered.length }}</span>
+        </h2>
+        <p>Patient location and the next care task</p>
+      </div>
+      <div class="segmented">
+        <button [class.selected]="mode === 'cards'" (click)="mode = 'cards'">
+          Cards</button
+        ><button [class.selected]="mode === 'list'" (click)="mode = 'list'">
+          List
+        </button>
+      </div>
+    </div>
+    <div class="care-filters">
+      <label
+        >Ward<select [(ngModel)]="ward" aria-label="Filter inpatient ward">
+          <option value="">All visible wards</option>
+          <option *ngFor="let w of wards">{{ w }}</option>
+        </select></label
+      ><label
+        >Admission status<select
+          [(ngModel)]="status"
+          aria-label="Filter admission status"
+        >
+          <option value="ADMITTED">Admitted</option>
+          <option value="DISCHARGED">Discharged</option>
+          <option value="">All statuses</option>
+        </select></label
+      >
+    </div>
+    <div role="status" class="care-loading" *ngIf="context.busy">
+      Loading admissions…
+    </div>
+    <div class="census-grid" *ngIf="mode === 'cards' && !context.busy">
+      <article class="census-card" *ngFor="let row of filtered">
+        <div class="queue-card-top">
+          <span class="visit-token">{{ text(row, "admissionNo") }}</span
+          ><span class="status" [attr.data-status]="row['status']">{{
+            text(row, "status")
+          }}</span>
+        </div>
+        <div class="patient-identity">
+          <span class="patient-avatar">{{ initials(name(row)) }}</span>
+          <div>
+            <h3>{{ name(row) }}</h3>
+            <small
+              >{{ text(row, "ward") }} · Bed {{ text(row, "bedNo") }}</small
+            >
+          </div>
+        </div>
+        <div class="stay-strip">
+          <span
+            >Length of stay <b>{{ stay(row) }}</b></span
+          ><span
+            >Admitted
+            <b>{{ text(row, "admittedAt") | date: "dd MMM yyyy" }}</b></span
+          >
+        </div>
+        <div class="dose-note" *ngIf="row['status'] === 'ADMITTED'">
+          ◷
+          {{
+            dueFor(row) === null
+              ? "Medication data unavailable"
+              : dueFor(row) + " scheduled doses due"
+          }}
+        </div>
+        <div class="queue-actions">
+          <button class="text-button" (click)="context.detail = row">
+            Admission details</button
+          ><button
+            class="care-action"
+            *ngFor="let action of context.rowActions(row)"
+            [disabled]="context.busy"
+            (click)="action.run()"
+          >
+            {{ action.label }} →
+          </button>
+        </div>
+      </article>
+    </div>
+    <app-record-table
+      *ngIf="mode === 'list'"
+      [rows]="filtered"
+      [columns]="context.columns"
+      [options]="context.options"
+      [busy]="context.busy"
+      [actions]="context.rowActions"
+    ></app-record-table>
+    <div class="care-empty" *ngIf="!context.busy && !filtered.length">
+      <span>⌂</span>
+      <h3>No admissions in this view</h3>
+      <p>Change the ward or status filter to see more patients.</p>
+    </div>
+  </section>
+  <div class="monitor-side">
+    <section class="care-panel">
+      <div class="care-panel-head">
+        <div>
+          <span class="care-kicker">CAPACITY</span>
+          <h2>Ward occupancy</h2>
+        </div>
+        <span class="metric-icon teal">▦</span>
+      </div>
+      <p class="care-footnote" *ngIf="beds === null">
+        {{ loading ? "Loading bed capacity…" : "Bed capacity unavailable" }}
+      </p>
+      <div class="ward-meter" *ngFor="let w of wards">
+        <div>
+          <b>{{ w }}</b
+          ><span>{{ wardOccupied(w) }} / {{ wardBeds(w).length }}</span>
+        </div>
+        <div class="occupancy-track"><i [style.width.%]="percent(w)"></i></div>
+        <small>{{ percent(w) }}% occupied</small>
+      </div>
+      <p *ngIf="beds !== null && !wards.length" class="care-footnote">
+        No beds configured.
+      </p>
+    </section>
+    <section class="care-panel care-next">
+      <span class="care-kicker">CARE COORDINATION</span>
+      <h2>Keep care moving</h2>
+      <button (click)="open('emar')">
+        <span class="metric-icon amber">◷</span
+        ><span
+          ><b>Medication chart</b
+          ><small>{{
+            due === null ? "Not available" : due + " scheduled doses due"
+          }}</small></span
+        ><span>→</span></button
+      ><button (click)="open('nursing')">
+        <span class="metric-icon teal">✎</span
+        ><span
+          ><b>Assessment & handover</b
+          ><small>Review nursing care records</small></span
+        ><span>→</span></button
+      ><button (click)="open('beds')">
+        <span class="metric-icon blue">▦</span
+        ><span
+          ><b>Bed readiness</b
+          ><small>{{
+            countBed("CLEANING") === null
+              ? "Not available"
+              : countBed("CLEANING") + " beds awaiting cleaning"
+          }}</small></span
+        ><span>→</span>
+      </button>
+    </section>
+  </div>
+</div>
+<p class="care-footnote">
+  Occupancy uses visible bed records. Due doses are scheduled medication entries
+  whose scheduled time has passed; these reminders do not replace clinical
+  review. Refresh above to update all monitoring data.
+</p>

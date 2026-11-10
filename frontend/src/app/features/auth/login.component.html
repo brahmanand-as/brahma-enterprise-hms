@@ -1,0 +1,41 @@
+<section class="auth-form">
+  <a class="text-button" routerLink="/">← Hospital home</a
+  ><span class="eyebrow">YOUR SECURE WORKSPACE</span>
+  <h2>Welcome back</h2>
+  <p class="muted">Sign in with your patient or hospital staff account.</p>
+  <app-notice [message]="message" (dismiss)="message = ''"></app-notice
+  ><app-notice
+    [message]="error"
+    kind="error"
+    (dismiss)="error = ''"
+  ></app-notice>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label
+      >Username<input
+        name="username"
+        formControlName="username"
+        autocomplete="username"
+      /><small
+        class="field-error"
+        *ngIf="form.controls.username.touched && form.controls.username.invalid"
+        >Enter your username.</small
+      ></label
+    ><label
+      >Password<input
+        name="password"
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+      /><small
+        class="field-error"
+        *ngIf="form.controls.password.touched && form.controls.password.invalid"
+        >Enter your password.</small
+      ></label
+    ><button type="submit" class="primary full" [disabled]="busy">
+      Sign in →
+    </button>
+  </form>
+  <a class="text-button full" routerLink="/register"
+    >New patient? Create your account</a
+  >
+</section>

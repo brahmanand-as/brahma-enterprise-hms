@@ -1,0 +1,16 @@
+-- Only applied to the fresh enterprise database. No import from the legacy database.
+CREATE TABLE patient_number_sequence(id INT PRIMARY KEY,next_value BIGINT NOT NULL);
+INSERT INTO patient_number_sequence VALUES(1,1);
+ALTER TABLE staff_accounts ADD patient_id BIGINT NULL, ADD CONSTRAINT fk_account_patient FOREIGN KEY(patient_id) REFERENCES patients(id);
+CREATE TABLE appointment_slots(id BIGINT PRIMARY KEY AUTO_INCREMENT,doctor_name VARCHAR(120) NOT NULL,starts_at DATETIME NOT NULL,ends_at DATETIME NOT NULL,blocked BOOLEAN NOT NULL DEFAULT FALSE,UNIQUE KEY uk_doctor_start(doctor_name,starts_at));
+ALTER TABLE appointments ADD slot_id BIGINT NULL,ADD CONSTRAINT fk_appointment_slot FOREIGN KEY(slot_id) REFERENCES appointment_slots(id);
+CREATE TABLE slot_reservations(slot_id BIGINT PRIMARY KEY,appointment_id BIGINT UNIQUE NOT NULL,FOREIGN KEY(slot_id) REFERENCES appointment_slots(id),FOREIGN KEY(appointment_id) REFERENCES appointments(id));
+CREATE TABLE reschedule_requests(id BIGINT PRIMARY KEY AUTO_INCREMENT,appointment_id BIGINT NOT NULL,requested_by VARCHAR(80) NOT NULL,reason VARCHAR(500) NOT NULL,status VARCHAR(30) NOT NULL DEFAULT 'PENDING',created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(appointment_id) REFERENCES appointments(id));
+CREATE TABLE helpdesk_tickets(id BIGINT PRIMARY KEY AUTO_INCREMENT,subject VARCHAR(200) NOT NULL,description TEXT NOT NULL,priority VARCHAR(20) NOT NULL,status VARCHAR(30) NOT NULL DEFAULT 'OPEN',created_by VARCHAR(80) NOT NULL,assigned_to VARCHAR(80),resolution TEXT,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE registration_payments(patient_id BIGINT PRIMARY KEY,amount DECIMAL(12,2) NOT NULL,method VARCHAR(30) NOT NULL,status VARCHAR(30) NOT NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(patient_id) REFERENCES patients(id));
+CREATE TABLE hospital_settings(setting_key VARCHAR(80) PRIMARY KEY,setting_value VARCHAR(500) NOT NULL);
+INSERT INTO hospital_settings VALUES('registration_fee','100.00');
+CREATE TABLE duty_roster(id BIGINT PRIMARY KEY AUTO_INCREMENT,employee_id BIGINT NOT NULL,shift_date DATE NOT NULL,starts_at TIME NOT NULL,ends_at TIME NOT NULL,status VARCHAR(30) NOT NULL DEFAULT 'SCHEDULED',UNIQUE KEY uk_roster(employee_id,shift_date,starts_at),FOREIGN KEY(employee_id) REFERENCES employees(id));
+CREATE TABLE medication_administrations(id BIGINT PRIMARY KEY AUTO_INCREMENT,admission_id BIGINT NOT NULL,medicine_name VARCHAR(150) NOT NULL,dose VARCHAR(80) NOT NULL,route VARCHAR(40) NOT NULL,scheduled_at DATETIME NOT NULL,status VARCHAR(30) NOT NULL DEFAULT 'ORDERED',ordered_by VARCHAR(80) NOT NULL,administered_by VARCHAR(80),administered_at DATETIME,notes VARCHAR(500),FOREIGN KEY(admission_id) REFERENCES admissions(id));
+ALTER TABLE ipd_beds ADD floor_name VARCHAR(30) NOT NULL DEFAULT '1',ADD bed_type VARCHAR(30) NOT NULL DEFAULT 'GENERAL',ADD status VARCHAR(30) NOT NULL DEFAULT 'AVAILABLE';
+CREATE TABLE bed_movements(id BIGINT PRIMARY KEY AUTO_INCREMENT,admission_id BIGINT NOT NULL,from_bed VARCHAR(120),to_bed VARCHAR(120),action VARCHAR(30) NOT NULL,performed_by VARCHAR(80) NOT NULL,created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(admission_id) REFERENCES admissions(id));

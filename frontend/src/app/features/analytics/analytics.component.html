@@ -1,0 +1,75 @@
+<app-notice [message]="error" kind="error" (dismiss)="error = ''"></app-notice>
+<section class="panel">
+  <div class="panel-heading">
+    <div>
+      <h2>Monthly performance</h2>
+      <p>Month-over-month comparison. Simulated payments are excluded.</p>
+    </div>
+    <div class="actions">
+      <input type="month" [formControl]="filters.controls.month" /><select
+        [formControl]="filters.controls.department"
+      >
+        <option value="">All departments</option>
+        <option *ngFor="let d of departments" [value]="d.label">
+          {{ d.label }}
+        </option></select
+      ><button class="primary" (click)="apply()">Apply</button
+      ><button class="secondary" (click)="download('xlsx')">Excel ↓</button
+      ><button class="secondary" (click)="download('pdf')">PDF ↓</button>
+    </div>
+  </div>
+  <div *ngIf="report">
+    <div class="metric-grid report-metrics">
+      <article
+        *ngFor="
+          let key of [
+            'patients',
+            'visits',
+            'netCollections',
+            'averageWaitMinutes',
+          ]
+        "
+      >
+        <span>{{ label(key) }}</span
+        ><b>{{ report.current[key] | number: "1.0-2" }}</b
+        ><small [class.positive]="report.changes[key]?.direction === 'UP'"
+          >{{ report.changes[key]?.direction }} ·
+          {{ report.changes[key]?.absolute | number: "1.0-2" }}
+          <ng-container *ngIf="report.changes[key]?.percent !== null"
+            >({{ report.changes[key]?.percent }}%)</ng-container
+          ></small
+        >
+      </article>
+    </div>
+    <div class="two-columns">
+      <div>
+        <h3>Department activity</h3>
+        <div class="bar-row" *ngFor="let d of report.departments">
+          <span>{{ d.department }}</span>
+          <div>
+            <i
+              [style.width.%]="(d.visits / (report.current.visits || 1)) * 100"
+            ></i>
+          </div>
+          <b>{{ d.visits }}</b>
+        </div>
+        <p *ngIf="!report.departments.length" class="muted">
+          No activity in this period.
+        </p>
+      </div>
+      <div class="report-summary">
+        <h3>Care &amp; financial summary</h3>
+        <dl>
+          <dt>Gross collections</dt>
+          <dd>{{ report.current.collections | currency: "INR" }}</dd>
+          <dt>Refunds</dt>
+          <dd>{{ report.current.refunds | currency: "INR" }}</dd>
+          <dt>Quality events</dt>
+          <dd>{{ report.current.qualityEvents }}</dd>
+          <dt>Admissions</dt>
+          <dd>{{ report.current.admissions }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>

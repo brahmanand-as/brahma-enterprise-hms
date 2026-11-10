@@ -1,0 +1,78 @@
+<div
+  class="workspace"
+  [class.doctor-workspace]="user.role === 'DOCTOR'"
+  *ngIf="session.user as user"
+>
+  <aside>
+    <a class="brand" routerLink="/"
+      >✚ <span>AROGYA<small>ENTERPRISE HOSPITAL</small></span></a
+    >
+    <div class="workspace-label">{{ label(user.role) }} WORKSPACE</div>
+    <nav>
+      <button
+        type="button"
+        *ngFor="let item of menu"
+        [class.active]="active === item.id"
+        (click)="navigate(item.id)"
+      >
+        <span class="nav-icon">{{ item.icon }}</span
+        >{{ item.label
+        }}<span
+          class="nav-count"
+          *ngIf="item.id === 'notifications' && notices.unread"
+          >{{ notices.unread }}</span
+        >
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="avatar">{{ user.username.slice(0, 1).toUpperCase() }}</span>
+      <div>
+        <b>{{ user.username }}</b
+        ><small>{{ label(user.role) }}</small>
+      </div>
+      <button type="button" (click)="auth.logout()" title="Sign out">↗</button>
+    </div>
+  </aside>
+  <main>
+    <header class="page-header">
+      <div>
+        <span class="eyebrow">AROGYA · CONNECTED CARE</span>
+        <h1>
+          {{
+            user.role === "DOCTOR" && active === "overview"
+              ? "Clinical overview"
+              : current.label
+          }}
+        </h1>
+        <p>
+          {{
+            user.role === "PATIENT"
+              ? "Your appointments, care records and documents."
+              : "Your department, connected to the whole patient journey."
+          }}
+        </p>
+      </div>
+      <div class="header-tools">
+        <button
+          type="button"
+          class="notification-button"
+          (click)="navigate('notifications')"
+        >
+          ◉ <span>{{ notices.unread }}</span></button
+        ><button
+          type="button"
+          class="secondary"
+          aria-label="Sign out"
+          (click)="auth.logout()"
+        >
+          Sign out</button
+        ><span class="role-pill"><i></i>{{ label(user.role) }}</span>
+      </div>
+    </header>
+    <router-outlet></router-outlet>
+    <footer class="workspace-footer">
+      AROGYA ENTERPRISE
+      <span>Role-based access · Audited hospital workflows</span>
+    </footer>
+  </main>
+</div>

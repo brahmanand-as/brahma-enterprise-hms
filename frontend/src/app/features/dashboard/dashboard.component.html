@@ -1,0 +1,70 @@
+<app-doctor-dashboard
+  *ngIf="session.user?.role === 'DOCTOR'; else generalDashboard"
+></app-doctor-dashboard>
+<ng-template #generalDashboard>
+  <app-notice
+    [message]="error"
+    kind="error"
+    (dismiss)="error = ''"
+  ></app-notice>
+  <section>
+    <div class="welcome-banner">
+      <div>
+        <span class="eyebrow">READY FOR THE DAY</span>
+        <h2>Welcome, {{ session.user?.username }}.</h2>
+        <p>Care flows best when every department stays connected.</p>
+      </div>
+      <span class="welcome-symbol">✚</span>
+    </div>
+    <div class="metric-grid">
+      <article>
+        <span>Registered patients</span><b>{{ stats.patients || 0 }}</b
+        ><small>Patient directory</small>
+      </article>
+      <article>
+        <span>Clinical visits</span><b>{{ stats.encounters || 0 }}</b
+        ><small>OPD &amp; consultations</small>
+      </article>
+      <article>
+        <span>Laboratory orders</span><b>{{ stats.labOrders || 0 }}</b
+        ><small>Diagnostics</small>
+      </article>
+      <article>
+        <span>Invoices</span><b>{{ stats.invoices || 0 }}</b
+        ><small>Billing records</small>
+      </article>
+    </div>
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Your workspace</h2>
+          <p>Choose a task to continue.</p>
+        </div>
+      </div>
+      <div class="shortcut-grid">
+        <button *ngFor="let item of menu.slice(1, 9)" (click)="open(item.id)">
+          <span>{{ item.icon }}</span
+          ><b>{{ item.label }}</b
+          ><small>Open workspace →</small>
+        </button>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Updates for you</h2>
+      <div
+        class="notification-card"
+        *ngFor="let n of notices.notifications.value.slice(0, 4)"
+      >
+        <span>◉</span>
+        <div>
+          <b>{{ n.subject }}</b>
+          <p>{{ n.message }}</p>
+          <small>{{ n.created_at | date: "medium" }}</small>
+        </div>
+      </div>
+      <p *ngIf="!notices.notifications.value.length" class="muted">
+        You’re up to date.
+      </p>
+    </section>
+  </section>
+</ng-template>

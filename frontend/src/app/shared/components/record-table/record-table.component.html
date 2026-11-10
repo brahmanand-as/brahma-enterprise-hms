@@ -1,0 +1,43 @@
+<section class="panel table-panel" [attr.aria-busy]="busy">
+  <div class="record-count">
+    {{ rows.length }} records <span *ngIf="busy">· Loading…</span>
+  </div>
+  <div class="table-scroll">
+    <table *ngIf="rows.length">
+      <thead>
+        <tr>
+          <th *ngFor="let key of columns">{{ label(key) }}</th>
+          <th class="action-heading">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of rows; trackBy: trackRow">
+          <td *ngFor="let key of columns">
+            <span
+              [class.status]="key.toLowerCase().includes('status')"
+              [attr.data-status]="row[key]"
+              >{{ value(row, key) }}</span
+            >
+          </td>
+          <td>
+            <div class="row-actions">
+              <button
+                type="button"
+                *ngFor="let action of actions(row)"
+                [disabled]="busy"
+                (click)="action.run()"
+              >
+                {{ action.label }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="empty-state" *ngIf="!rows.length && !busy">
+      <span>◈</span>
+      <h3>No records here yet</h3>
+      <p>New activity will appear in this workspace.</p>
+    </div>
+  </div>
+</section>

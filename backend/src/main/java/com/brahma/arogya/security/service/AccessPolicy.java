@@ -1,0 +1,144 @@
+package com.brahma.arogya.security.service;
+
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+
+@Component
+public class AccessPolicy {
+
+  private record Rule(String method, String pattern, String permission) {}
+
+  private final List<Rule> rules = new ArrayList<>();
+
+  private final AntPathMatcher matcher = new AntPathMatcher();
+
+  public AccessPolicy() {
+    rule("*", "/api/security/**", "security.manage");
+    rule("*", "/api/staff/**", "staff.manage");
+    rule("*", "/api/masters/**", "staff.manage");
+    rule("*", "/api/employees/**", "staff.manage");
+    rule("*", "/api/doctor-profiles/mine", "clinical.read");
+    rule("*", "/api/doctor-profiles/**", "staff.manage");
+    rule("GET", "/api/clinical/**", "clinical.read");
+    rule("GET", "/api/patients/**", "patients.read");
+    rule("*", "/api/patients/**", "patients.write");
+    rule("*", "/api/care/**", "care.assign");
+    rule("GET", "/api/appointments/**", "appointments.read");
+    rule("*", "/api/scheduling/**", "appointments.manage");
+    rule("*", "/api/workflow/appointments/**", "clinical.checkin");
+    rule("*", "/api/workflow/walk-in", "clinical.checkin");
+    rule("*", "/api/workflow/encounters/*/vitals", "clinical.vitals");
+    rule("*", "/api/workflow/encounters/**", "clinical.consult");
+    for (String p : List.of("encounters", "consultations", "vitals"))
+      rule("GET", "/api/" + p + "/**", "clinical.read");
+    rule("GET", "/api/orders/prescriptions/**", "prescription.read");
+    rule("*", "/api/orders/prescriptions/**", "prescription.write");
+    rule("*", "/api/orders/radiology", "radiology.order");
+    rule("GET", "/api/lab-tests/**", "lab.read");
+    rule("*", "/api/lab-tests/**", "lab.catalog");
+    rule("GET", "/api/lab-orders/**", "lab.read");
+    rule("GET", "/api/operations/lab/**", "lab.read");
+    rule("*", "/api/operations/lab/orders", "lab.order");
+    rule("*", "/api/operations/lab/**", "lab.process");
+    rule("*", "/api/laboratory/**", "lab.process");
+    rule("GET", "/api/radiology/**", "radiology.read");
+    rule("*", "/api/enterprise/radiology/**", "radiology.report");
+    rule("GET", "/api/admissions/**", "ipd.read");
+    rule("GET", "/api/operations/ipd/**", "ipd.read");
+    rule("*", "/api/operations/ipd/**", "ipd.manage");
+    rule("GET", "/api/ward/**", "ipd.read");
+    rule("*", "/api/ward/medications/*/administer", "nursing.write");
+    rule("*", "/api/ward/medications", "prescription.write");
+    rule("*", "/api/ward/**", "ipd.manage");
+    rule("GET", "/api/inventory/**", "pharmacy.read");
+    rule("*", "/api/inventory/**", "inventory.manage");
+    rule("*", "/api/operations/pharmacy/**", "pharmacy.manage");
+    rule("GET", "/api/invoices/**", "billing.read");
+    rule("*", "/api/operations/billing/**", "billing.manage");
+    rule("*", "/api/enterprise/claims/**", "insurance.manage");
+    rule("*", "/api/enterprise/insurance/**", "insurance.manage");
+    rule("*", "/api/insurance/**", "insurance.manage");
+    rule("POST", "/api/hr/admin/leaves/*/review", "hr.approve");
+    rule("GET", "/api/hr/admin/leaves", "hr.approve");
+    rule("POST", "/api/staffing/requests/*/review", "roster.approve");
+    rule("*", "/api/hr/admin/**", "hr.manage");
+    rule("GET", "/api/enterprise/roster/**", "roster.read");
+    rule("*", "/api/enterprise/roster/**", "roster.manage");
+    rule("*", "/api/helpdesk/tickets/*/review", "helpdesk.manage");
+    rule("*", "/api/helpdesk/**", "SIGNED_IN");
+    rule("*", "/api/analytics/**", "analytics.read");
+    rule("*", "/api/documents/**", "documents.read");
+    rule("POST", "/api/reports/quality", "nursing.write");
+    rule("*", "/api/reports/**", "analytics.read");
+    rule("*", "/api/coverage/**", "insurance.manage");
+    rule("GET", "/api/staffing/roster/**", "roster.read");
+    rule("GET", "/api/staffing/requests/**", "SIGNED_IN");
+    rule("POST", "/api/staffing/requests", "SIGNED_IN");
+    rule("*", "/api/staffing/**", "hr.manage");
+    rule("GET", "/api/finance/**", "billing.read");
+    rule("*", "/api/finance/**", "billing.manage");
+    rule("GET", "/api/pharmacy/ward-stock", "wardstock.read");
+    rule("GET", "/api/pharmacy/patient-consumables", "wardstock.read");
+    rule("GET", "/api/pharmacy/**", "pharmacy.read");
+    rule("*", "/api/pharmacy/ward-stock/*/consume", "nursing.write");
+    rule("*", "/api/pharmacy/ward-stock/*/action", "nursing.write");
+    rule("*", "/api/pharmacy/consumable-returns", "nursing.write");
+    rule("*", "/api/pharmacy/**", "pharmacy.manage");
+    rule("GET", "/api/inpatient/**", "ipd.read");
+    rule("*", "/api/inpatient/medication-orders/*/verify", "pharmacy.manage");
+    rule("*", "/api/inpatient/medication-orders", "prescription.write");
+    rule("*", "/api/inpatient/nursing-notes", "nursing.write");
+    rule("*", "/api/inpatient/recommendations", "ipd.recommend");
+    rule("*", "/api/inpatient/**", "ipd.manage");
+  }
+
+  private void rule(String method, String pattern, String permission) {
+    rules.add(new Rule(method, pattern, permission));
+  }
+
+  public boolean has(Authentication auth, String permission) {
+    return auth != null
+        && auth.isAuthenticated()
+        && auth.getAuthorities().stream()
+            .anyMatch(
+                x ->
+                    x.getAuthority().equals("ROLE_ADMIN")
+                        || x.getAuthority().equals("PERM_" + permission));
+  }
+
+  public boolean role(Authentication auth, String role) {
+    return auth != null
+        && auth.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals("ROLE_" + role));
+  }
+
+  public boolean allowed(Authentication auth, HttpServletRequest req) {
+    if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName()))
+      return false;
+    String path = req.getRequestURI(), method = req.getMethod();
+    if (path.startsWith("/api/auth/")
+        || path.startsWith("/api/notifications")
+        || path.startsWith("/api/hr/me/")
+        || path.startsWith("/api/portal/")) return true;
+    if (path.startsWith("/api/patient/")) return role(auth, "PATIENT");
+    if (role(auth, "PATIENT"))
+      return path.startsWith("/api/helpdesk/") && !path.endsWith("/review");
+    if (has(auth, "security.manage") && role(auth, "ADMIN")) return true;
+    if (path.matches("/api/operations/lab/items/\\d+/transition"))
+      return has(auth, "lab.process") || has(auth, "lab.verify") || has(auth, "lab.complete");
+    if ((path.matches("/api/pharmacy/ward-stock/\\d+/action")
+            || path.equals("/api/pharmacy/consumable-returns"))
+        && !method.equals("GET")) return has(auth, "nursing.write") || has(auth, "pharmacy.manage");
+    if (path.matches("/api/ward/beds/\\d+/ready"))
+      return has(auth, "nursing.write") || has(auth, "ipd.manage");
+    if (path.equals("/api/inpatient/medication-orders") && method.equals("GET"))
+      return has(auth, "ipd.read") || has(auth, "pharmacy.read");
+    if (path.equals("/api/dashboard")) return true;
+    for (var r : rules)
+      if ((r.method.equals("*") || r.method.equals(method)) && matcher.match(r.pattern, path))
+        return r.permission.equals("SIGNED_IN") || has(auth, r.permission);
+    return false;
+  }
+}

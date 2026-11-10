@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: arogya-hms-enterprise-v2
+
+  datasource:
+    url: "jdbc:mysql://${DB_HOST:localhost}:3306/arogya_hms_enterprise?createDatabaseIfNotExist=true&serverTimezone=Asia/Kolkata"
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    hikari:
+      connection-init-sql: "SET time_zone = '+05:30'"
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8080
+
+app:
+  jwt-secret: ${HMS_JWT_SECRET:}
+  jwt-hours: 1
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+hms:
+  admin:
+    username: ${HMS_ADMIN_USERNAME:admin}
+    password: ${HMS_ADMIN_PASSWORD:}
+  cors:
+    origin: ${HMS_CORS_ORIGIN:http://localhost:4200}

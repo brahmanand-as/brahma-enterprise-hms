@@ -1,0 +1,240 @@
+<div class="doctor-command" data-testid="doctor-dashboard">
+  <section class="care-banner doctor-banner">
+    <div>
+      <span class="care-kicker">YOUR CLINICAL DAY</span>
+      <h2>Good care starts with a clear view.</h2>
+      <p>Your patients, consultations and ward rounds — connected.</p>
+      <div class="banner-chips">
+        <span>◷ {{ today | date: "EEEE, dd MMMM" }}</span
+        ><span>Assigned care scope</span>
+      </div>
+    </div>
+    <div class="doctor-emblem" aria-hidden="true">
+      <span>✚</span><small>AROGYA<br />CLINICAL WORKSPACE</small>
+    </div>
+  </section>
+  <div class="dashboard-update">
+    <span
+      ><i class="update-dot"></i
+      >{{
+        loading
+          ? "Loading your workspace…"
+          : updated
+            ? "Updated " +
+              (updated | date: "HH:mm:ss") +
+              " · Refresh for latest status"
+            : "Awaiting data"
+      }}</span
+    ><button class="text-button" [disabled]="loading" (click)="refresh()">
+      ↻ Refresh dashboard
+    </button>
+  </div>
+  <div class="care-warning" *ngIf="warnings.length" role="alert">
+    {{ warnings.join(" · ") }}. Refresh to retry. Affected figures may be
+    incomplete.
+  </div>
+  <div class="care-metrics doctor-metrics">
+    <article>
+      <span class="metric-icon blue">◷</span>
+      <div>
+        <small>Today's appointments</small
+        ><strong>{{ metric("Appointments", schedule.length) }}</strong
+        ><span>All appointment statuses</span>
+      </div>
+    </article>
+    <article>
+      <span class="metric-icon amber">◴</span>
+      <div>
+        <small>Waiting for consultation</small
+        ><strong>{{ metric("Clinical queue", waiting.length) }}</strong
+        ><span>{{
+          average === null
+            ? "No waiting time recorded"
+            : "Average current wait · " + average + " min"
+        }}</span>
+      </div>
+    </article>
+    <article>
+      <span class="metric-icon teal">✚</span>
+      <div>
+        <small>With doctor</small
+        ><strong>{{ metric("Clinical queue", consulting.length) }}</strong
+        ><span>Consultations in progress</span>
+      </div>
+    </article>
+    <article>
+      <span class="metric-icon green">⌂</span>
+      <div>
+        <small>Admitted patients</small
+        ><strong>{{ metric("Inpatients", inpatients.length) }}</strong
+        ><span>Visible in your care scope</span>
+      </div>
+    </article>
+  </div>
+  <div class="doctor-main-grid">
+    <div class="doctor-primary">
+      <section class="care-panel">
+        <div class="care-panel-head">
+          <div>
+            <span class="care-kicker">NEXT IN CARE</span>
+            <h2>
+              Clinical queue
+              <span class="count-bubble">{{ waiting.length }}</span>
+            </h2>
+            <p>Today's waiting patients · Oldest check-in first</p>
+          </div>
+          <button class="secondary" (click)="open('visits')">
+            Open OPD board ↗
+          </button>
+        </div>
+        <div
+          class="doctor-patient-row"
+          *ngFor="let row of waiting.slice(0, 5); let i = index"
+        >
+          <span class="queue-position">{{ i + 1 | number: "2.0" }}</span
+          ><span class="patient-avatar">{{ initials(name(row)) }}</span>
+          <div class="patient-row-name">
+            <h3>{{ name(row) }}</h3>
+            <p>{{ text(row, "chiefComplaint") || "Reason not recorded" }}</p>
+            <small>{{ text(row, "encounterNo") }}</small>
+          </div>
+          <span class="wait-tag" [class.long-wait]="(wait(row) || 0) >= 30"
+            >◷ {{ wait(row) === null ? "—" : wait(row) + " min" }}</span
+          ><button class="care-action" (click)="open('visits')">
+            Open queue →
+          </button>
+        </div>
+        <div class="care-empty" *ngIf="!loading && !waiting.length">
+          <span>✓</span>
+          <h3>No patients waiting today</h3>
+          <p>
+            Checked-in patients will appear here. Use the OPD board for other
+            dates.
+          </p>
+        </div>
+        <div class="care-loading" *ngIf="loading" role="status">
+          Loading clinical queue…
+        </div>
+        <div class="active-consultation" *ngIf="consulting.length">
+          <span class="care-kicker"
+            >IN CONSULTATION · {{ consulting.length }}</span
+          >
+          <div *ngFor="let row of consulting.slice(0, 3)">
+            <b>{{ name(row) }}</b
+            ><span>{{ text(row, "encounterNo") }}</span
+            ><button class="text-button" (click)="open('visits')">
+              Continue consultation →
+            </button>
+          </div>
+        </div>
+      </section>
+      <section class="care-panel">
+        <div class="care-panel-head">
+          <div>
+            <span class="care-kicker">WARD ROUNDS</span>
+            <h2>Inpatients under care</h2>
+            <p>Review location and admission details</p>
+          </div>
+          <button class="text-button" (click)="open('admissions')">
+            IPD monitor ↗
+          </button>
+        </div>
+        <div class="doctor-inpatient-grid">
+          <button
+            class="round-card"
+            *ngFor="let row of inpatients.slice(0, 4)"
+            (click)="open('admissions')"
+          >
+            <span class="patient-avatar">{{ initials(name(row)) }}</span>
+            <h3>{{ name(row) }}</h3>
+            <p>{{ text(row, "ward") }} · Bed {{ text(row, "bedNo") }}</p>
+            <small>{{ text(row, "admissionNo") }}</small
+            ><span>View admission →</span>
+          </button>
+        </div>
+        <div class="care-empty compact" *ngIf="!loading && !inpatients.length">
+          <p>No admitted patients in your visible care scope.</p>
+        </div>
+      </section>
+    </div>
+    <div class="doctor-secondary">
+      <section class="care-panel">
+        <div class="care-panel-head">
+          <div>
+            <span class="care-kicker">TODAY AT A GLANCE</span>
+            <h2>Patient journey</h2>
+          </div>
+          <span class="metric-icon teal">↗</span>
+        </div>
+        <div class="journey-strip">
+          <span
+            *ngFor="let step of flow"
+            [class]="step.color"
+            [style.flex-grow]="step.count || 0.15"
+            [attr.aria-label]="step.label + ': ' + step.count"
+          ></span>
+        </div>
+        <div class="journey-key" *ngFor="let step of flow">
+          <span [class]="'lane-dot ' + step.color"></span
+          ><span>{{ step.label }}</span
+          ><b>{{ step.count }}</b>
+        </div>
+        <p class="care-footnote">Today's visible clinical visits</p>
+      </section>
+      <section class="care-panel agenda-panel">
+        <div class="care-panel-head">
+          <div>
+            <span class="care-kicker">APPOINTMENTS</span>
+            <h2>Today's schedule</h2>
+          </div>
+          <button class="text-button" (click)="open('appointments')">
+            View all →
+          </button>
+        </div>
+        <div class="agenda-item" *ngFor="let row of schedule.slice(0, 5)">
+          <time>{{ time(row) }}<small>IST</small></time>
+          <div>
+            <b>{{ name(row) }}</b
+            ><small>{{ text(row, "reason") || "Consultation" }}</small
+            ><span class="status">{{ text(row, "status") }}</span>
+          </div>
+        </div>
+        <p class="care-footnote" *ngIf="!loading && !schedule.length">
+          No appointments today.
+        </p>
+      </section>
+      <section class="care-panel clinical-shortcuts">
+        <span class="care-kicker">CLINICAL TOOLS</span>
+        <h2>Continue your work</h2>
+        <button
+          *ngIf="session.has('prescription.read')"
+          (click)="open('prescriptions')"
+        >
+          <span class="metric-icon teal">▤</span
+          ><span
+            ><b>Prescriptions</b
+            ><small>{{ drafts }} drafts awaiting finalization</small></span
+          ><span>→</span></button
+        ><button *ngIf="session.has('lab.read')" (click)="open('laboratory')">
+          <span class="metric-icon blue">⚗</span
+          ><span
+            ><b>Laboratory</b
+            ><small>Review test progress & results</small></span
+          ><span>→</span></button
+        ><button
+          *ngIf="session.has('radiology.read')"
+          (click)="open('radiology')"
+        >
+          <span class="metric-icon amber">◉</span
+          ><span><b>Radiology</b><small>Review studies & reports</small></span
+          ><span>→</span>
+        </button>
+      </section>
+    </div>
+  </div>
+  <p class="care-footnote">
+    Counts reflect records permitted by the server. Waiting time runs from
+    check-in and is not a triage score. Patient and hospital data are never
+    fabricated for this dashboard.
+  </p>
+</div>

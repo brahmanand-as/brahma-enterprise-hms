@@ -1,0 +1,2 @@
+CREATE TABLE admission_bed_segments(id BIGINT PRIMARY KEY AUTO_INCREMENT,admission_id BIGINT NOT NULL,bed_id BIGINT NOT NULL,started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,ended_at DATETIME,daily_rate DECIMAL(12,2) NOT NULL,invoice_id BIGINT,FOREIGN KEY(admission_id) REFERENCES admissions(id),FOREIGN KEY(bed_id) REFERENCES ipd_beds(id));
+ALTER TABLE issued_documents CHANGE content_json content_text LONGTEXT NOT NULL;

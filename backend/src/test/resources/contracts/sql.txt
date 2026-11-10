@@ -1,0 +1,526 @@
+DELETE FROM care_teams WHERE patient_id=? AND username=?
+DELETE FROM insurance_lines WHERE claim_id=?
+DELETE FROM role_permissions WHERE role_name=?
+DELETE FROM slot_reservations WHERE appointment_id=?
+DELETE FROM slot_reservations WHERE appointment_id=?
+INSERT IGNORE INTO care_teams VALUES(?,?)
+INSERT IGNORE INTO doctor_slot_locks VALUES(?)
+INSERT IGNORE INTO doctor_slot_locks VALUES(?)
+INSERT IGNORE INTO doctor_slot_locks VALUES(?)
+INSERT IGNORE INTO patient_identity_locks VALUES(?)
+INSERT INTO admission_bed_segments(admission_id,bed_id,daily_rate) SELECT ?,id,daily_rate FROM ipd_beds WHERE id=?
+INSERT INTO admission_recommendations(encounter_id,patient_id,ward_type,reason,recommended_by) VALUES(?,?,?,?,?)
+INSERT INTO admissions(admission_no,encounter_id,patient_id,ward,bed_no,status,admitted_at) VALUES(?,?,?,?,?,'ADMITTED',NOW())
+INSERT INTO appointment_slots(doctor_name,doctor_employee_id,starts_at,ends_at) VALUES(?,?,?,?)
+INSERT INTO appointment_slots(doctor_name,doctor_employee_id,starts_at,ends_at) VALUES(?,?,?,?)
+INSERT INTO appointment_slots(doctor_name,starts_at,ends_at) VALUES('Dr Synthetic Demo',?,?)
+INSERT INTO appointments(patient_id,doctor_name,appointment_at,type,status,reason,created_by_source) VALUES(?,?,DATE_ADD(NOW(),INTERVAL 1 DAY),'OPD','PENDING',?,'RECEPTION_PROVISIONAL')
+INSERT INTO appointments(patient_id,doctor_name,appointment_at,type,status,reason,slot_id,doctor_employee_id,department_id) VALUES(?,?,?,'OPD','BOOKED',?,?,?,?)
+INSERT INTO attendance(employee_id,work_date,status,hours_worked) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),hours_worked=VALUES(hours_worked)
+INSERT INTO audit_logs(username,action,entity_type,entity_id) VALUES(?,'PRESCRIPTION_FINALIZED','PRESCRIPTION',?)
+INSERT INTO audit_logs(username,action,entity_type,entity_id) VALUES(?,?,'APPOINTMENT',?)
+INSERT INTO audit_logs(username,action,entity_type,entity_id) VALUES(?,?,?,?)
+INSERT INTO audit_logs(username,action,entity_type,entity_id,details) VALUES(?,?,?,? ,?)
+INSERT INTO batch_movements(batch_id,quantity,reason,reference_id,patient_id,ward,performed_by,notes) VALUES(?,?,?,?,?,?,?,?)
+INSERT INTO bed_movements(admission_id,from_bed,action,performed_by) VALUES(?, ?,'DISCHARGE',?)
+INSERT INTO bed_movements(admission_id,from_bed,to_bed,action,performed_by) VALUES(?,?,?,'TRANSFER',?)
+INSERT INTO bed_movements(admission_id,to_bed,action,performed_by) VALUES(?,?,'ADMIT',?)
+INSERT INTO care_quality_events(encounter_id,department,event_type,severity,description,recorded_by) VALUES(?,?,?,?,?,?)
+INSERT INTO care_teams(patient_id,username) VALUES(?,'demo.nurse')
+INSERT INTO consumable_returns(movement_id,quantity,reason,performed_by) VALUES(?,?,?,?)
+INSERT INTO department_heads VALUES(?,?) ON DUPLICATE KEY UPDATE username=VALUES(username)
+INSERT INTO departments(code,name) VALUES(?,?)
+INSERT INTO dispense_allocations(dispense_id,batch_id,quantity,unit_price) VALUES(?,?,?,?)
+INSERT INTO doctor_profiles(employee_id,specialty,qualification,experience_years,registration_number,consultation_fee,photo_url,biography,availability_notes) VALUES(?,?,?,?,?,?,?,?,?)
+INSERT INTO duty_roster(employee_id,shift_date,starts_at,ends_at,ends_on) SELECT id,?,'09:00','13:00',? FROM employees WHERE name='Dr Synthetic Demo'
+INSERT INTO duty_roster(employee_id,shift_date,starts_at,ends_at,ends_on) VALUES(?,?,?,?,?)
+INSERT INTO duty_roster(employee_id,shift_date,starts_at,ends_at,ends_on,replacement_for) VALUES(?,?,?,?,?,?)
+INSERT INTO employees(employee_no,name,department,designation,status) VALUES(?,?,'DEMO',?,'ACTIVE')
+INSERT INTO enterprise_roles(name,label) VALUES(?,?)
+INSERT INTO external_labs(name,contact,active) VALUES('Synthetic Reference Laboratory','DEMO',1)
+INSERT INTO helpdesk_messages(ticket_id,username,message) VALUES(?,?,?)
+INSERT INTO helpdesk_tickets(subject,description,priority,created_by) VALUES(?,?,?,?)
+INSERT INTO insurance_claims(patient_id,encounter_id,admission_id,provider,policy_no,claim_amount,non_payable,approved_amount,claim_type,status) VALUES(?,?,?,?,?,?,?,0,?,'DRAFT')
+INSERT INTO insurance_enhancements(claim_id,requested_amount,notes,requested_by) VALUES(?,?,?,?)
+INSERT INTO insurance_events(claim_id,status,amount,notes,performed_by) VALUES(?,?,?,?,?)
+INSERT INTO insurance_events(claim_id,status,amount,notes,performed_by) VALUES(?,?,?,?,?)
+INSERT INTO insurance_invoice_allocations(claim_id,invoice_id,amount) VALUES(?,?,?)
+INSERT INTO insurance_lines(claim_id,description,amount,eligible_amount) VALUES(?,?,?,?)
+INSERT INTO insurance_settlements(claim_id,amount,reference_no,received_on,performed_by) VALUES(?,?,?,?,?)
+INSERT INTO inventory_batches(inventory_item_id,batch_no,expires_on,quantity,unit_cost,sale_price) SELECT id,'SYNTHETIC',DATE_ADD(CURDATE(),INTERVAL 1 YEAR),stock_qty,5,10 FROM inventory_items
+INSERT INTO inventory_batches(inventory_item_id,batch_no,expires_on,quantity,unit_cost,sale_price) VALUES(?,?,?,?,?,?)
+INSERT INTO inventory_items(sku,name,category,stock_qty,reorder_level,unit,batch_no,expires_on) VALUES('DEMO-001','Synthetic stock — not for clinical use','DEMO',100,10,'UNIT','SYNTHETIC',?)
+INSERT INTO invoice_adjustments(invoice_id,adjustment_type,amount,reason,performed_by) VALUES(?,'CREDIT',?,?,?)
+INSERT INTO invoice_adjustments(invoice_id,adjustment_type,amount,reason,performed_by) VALUES(?,?,?,?,?)
+INSERT INTO invoice_items(invoice_id,item_type,reference_id,description,qty,unit_price,amount) VALUES(?,?,?,?,?,?,?)
+INSERT INTO invoice_items(invoice_id,item_type,reference_id,description,qty,unit_price,amount,charge_key) VALUES(?,?,?,?,?,?,?,?)
+INSERT INTO invoices(invoice_no,patient_id,encounter_id,department_id,total,gross_total,paid,status) VALUES(?,?,?,?,0,0,0,'UNPAID')
+INSERT INTO invoices(invoice_no,patient_id,encounter_id,department_id,total,paid,status,created_at) VALUES(?,?,?,?,?,0,'UNPAID',NOW())
+INSERT INTO ipd_beds(ward,bed_no,floor_name,bed_type,daily_rate) VALUES(?,?,?,?,?)
+INSERT INTO issued_documents(patient_id,document_type,reference_id,verification_token,content_text,issued_by) VALUES(?,?,?,?,?,?)
+INSERT INTO lab_order_items(lab_order_id,test_code,test_name,processing_type,external_lab_id,status) VALUES(?,?,?,?,?,'ORDERED')
+INSERT INTO lab_orders(order_no,encounter_id,patient_id,status,ordered_by,ordered_at) VALUES(?,?,?,'ORDERED',?,NOW())
+INSERT INTO leave_requests(employee_id,leave_type,start_date,end_date,reason,status) VALUES(?,?,?,?,?,'PENDING')
+INSERT INTO medication_administrations(admission_id,medication_order_id,medicine_name,dose,route,scheduled_at,ordered_by) VALUES(?,?,?,?,?,?,?)
+INSERT INTO medication_administrations(admission_id,medicine_name,dose,route,scheduled_at,ordered_by) VALUES(?,?,?,?,?,?)
+INSERT INTO medication_orders(admission_id,patient_id,inventory_item_id,medicine_name,dose,route,starts_at,interval_hours,dose_count,quantity_per_dose,ordered_by) VALUES(?,?,?,?,?,?,?,?,?,?,?)
+INSERT INTO notifications(username,subject,message) VALUES(?,?,?)
+INSERT INTO nursing_notes(admission_id,note_type,assessment,plan,nurse) VALUES(?,?,?,?,?)
+INSERT INTO patients(uhid,first_name,last_name,mobile) VALUES('MRN-00000001','Synthetic','Patient','0000000000')
+INSERT INTO payments(invoice_id,amount,method,reference_no,paid_at) VALUES(?,?,?,?,NOW())
+INSERT INTO payments(invoice_id,amount,method,reference_no,verified_by,verified_at) VALUES(?,?,'INSURANCE',?,?,NOW())
+INSERT INTO payments(invoice_id,amount,method,reference_no,verified_by,verified_at) VALUES(?,?,?,?,?,NOW())
+INSERT INTO pharmacy_dispenses(patient_id,prescription_id,medication_order_id,inventory_item_id,quantity,charge_amount,performed_by) VALUES(?,?,?,?,?,0,?)
+INSERT INTO prescription_items(prescription_id,medicine_name,dose,frequency,duration,instructions) VALUES(?,?,?,?,?,?)
+INSERT INTO prescriptions(encounter_id,patient_id,status) VALUES(?,?,'DRAFT')
+INSERT INTO purchase_order_lines(purchase_order_id,inventory_item_id,quantity,unit_cost) VALUES(?,?,?,?)
+INSERT INTO purchase_orders(supplier_id,created_by) VALUES(?,?)
+INSERT INTO radiology_orders(order_no,encounter_id,patient_id,study_name,status) VALUES(?,?,?,?,'ORDERED')
+INSERT INTO refunds(invoice_id,amount,method,reference_no,reason,performed_by) VALUES(?,?,?,?,?,?)
+INSERT INTO refunds(invoice_id,amount,method,reference_no,reason,performed_by) VALUES(?,?,?,?,?,?)
+INSERT INTO registration_payments(patient_id,amount,method,status) SELECT ?,CAST(setting_value AS DECIMAL(12,2)),'DUMMY_ONLINE','COMPLETED' FROM hospital_settings WHERE setting_key='registration_fee' ON DUPLICATE KEY UPDATE patient_id=VALUES(patient_id)
+INSERT INTO reschedule_requests(appointment_id,requested_by,reason) SELECT a.id,'SYSTEM','Doctor deactivated: coordinate replacement' FROM appointments a WHERE a.doctor_employee_id=? AND a.appointment_at>NOW() AND a.status='BOOKED' AND NOT EXISTS(SELECT 1 FROM reschedule_requests r WHERE r.appointment_id=a.id AND r.status='PENDING')
+INSERT INTO reschedule_requests(appointment_id,requested_by,reason) SELECT a.id,'SYSTEM','Doctor on approved leave: coordinate replacement or reschedule' FROM appointments a WHERE a.doctor_employee_id=? AND DATE(a.appointment_at) BETWEEN ? AND ? AND a.status='BOOKED' AND NOT EXISTS(SELECT 1 FROM reschedule_requests r WHERE r.appointment_id=a.id AND r.status='PENDING')
+INSERT INTO reschedule_requests(appointment_id,requested_by,reason) SELECT a.id,?,'Doctor absent: reception to coordinate replacement' FROM appointments a WHERE a.doctor_employee_id=? AND DATE(a.appointment_at)=? AND a.status='BOOKED'
+INSERT INTO reschedule_requests(appointment_id,requested_by,reason) VALUES(?,?,?)
+INSERT INTO reschedule_requests(appointment_id,requested_by,reason) VALUES(?,?,?)
+INSERT INTO return_credit_requests(dispense_id,invoice_id,amount,reason,requested_by) VALUES(?,?,?,?,?)
+INSERT INTO return_credit_requests(invoice_id,amount,reason,requested_by) VALUES(?,?,?,?)
+INSERT INTO role_permissions VALUES(?,?)
+INSERT INTO salary_slips(employee_id,salary_month,basic,allowances,deductions,net_pay,payment_status) VALUES(?,?,?,?,?,?,?)
+INSERT INTO sample_dispatches(lab_order_item_id,external_lab_id,sample_id,courier_details,tracking_number,dispatch_time,status) VALUES(?,?,?,?,?,NOW(),'DISPATCHED')
+INSERT INTO shift_requests(roster_id,replacement_employee_id,reason,requested_by) VALUES(?,?,?,?)
+INSERT INTO slot_reservations VALUES(?,?)
+INSERT INTO slot_reservations VALUES(?,?)
+INSERT INTO staff_accounts(username,password_hash,role,employee_id) VALUES(?,?,?,?)
+INSERT INTO staff_accounts(username,password_hash,role,employee_id,enabled) VALUES (?,?,?,?,1)
+INSERT INTO staff_accounts(username,password_hash,role,enabled) VALUES (?,?,?,1)
+INSERT INTO staff_accounts(username,password_hash,role,patient_id) VALUES('demo.patient',?,'PATIENT',?)
+INSERT INTO staff_accounts(username,password_hash,role,patient_id) VALUES(?,?,'PATIENT',?)
+INSERT INTO staff_accounts(username,password_hash,role,patient_id) VALUES(?,?,'PATIENT',?)
+INSERT INTO stock_movements(inventory_item_id,quantity_change,reason,performed_by,created_at) VALUES(?,?,?,?,NOW())
+INSERT INTO stock_movements(inventory_item_id,quantity_change,reason,performed_by,created_at) VALUES(?,?,?,?,NOW())
+INSERT INTO suppliers(name,contact) VALUES(?,?)
+INSERT INTO ward_stock(batch_id,ward,quantity) VALUES(?,?,?) ON DUPLICATE KEY UPDATE quantity=quantity+VALUES(quantity)
+SELECT (SELECT COUNT(*) FROM care_teams WHERE patient_id=? AND username=?)+(SELECT COUNT(*) FROM encounters e JOIN staff_accounts s ON s.employee_id=e.doctor_employee_id WHERE e.patient_id=? AND s.username=?)+(SELECT COUNT(*) FROM appointments a JOIN staff_accounts s ON s.employee_id=a.doctor_employee_id WHERE a.patient_id=? AND s.username=?)
+SELECT * FROM admission_bed_segments WHERE admission_id=? AND ended_at IS NULL FOR UPDATE
+SELECT * FROM admission_recommendations WHERE id=? FOR UPDATE
+SELECT * FROM admissions WHERE id=?
+SELECT * FROM admissions WHERE id=?
+SELECT * FROM admissions WHERE id=?
+SELECT * FROM admissions WHERE id=?
+SELECT * FROM admissions WHERE id=? AND status='ADMITTED'
+SELECT * FROM admissions WHERE id=? AND status='ADMITTED'
+SELECT * FROM admissions WHERE id=? FOR UPDATE
+SELECT * FROM admissions WHERE id=? FOR UPDATE
+SELECT * FROM appointment_slots WHERE id=? FOR UPDATE
+SELECT * FROM appointments WHERE id=?
+SELECT * FROM appointments WHERE id=? FOR UPDATE
+SELECT * FROM appointments WHERE id=? FOR UPDATE
+SELECT * FROM appointments WHERE id=? FOR UPDATE
+SELECT * FROM appointments WHERE patient_id=? ORDER BY appointment_at DESC
+SELECT * FROM audit_logs ORDER BY id DESC LIMIT ?
+SELECT * FROM batch_movements WHERE id=? AND reason='PATIENT_CONSUMABLE' FOR UPDATE
+SELECT * FROM department_heads
+SELECT * FROM departments ORDER BY name
+SELECT * FROM dispense_allocations WHERE dispense_id=? ORDER BY id FOR UPDATE
+SELECT * FROM doctor_slot_locks WHERE doctor_name=? FOR UPDATE
+SELECT * FROM doctor_slot_locks WHERE doctor_name=? FOR UPDATE
+SELECT * FROM doctor_slot_locks WHERE doctor_name=? FOR UPDATE
+SELECT * FROM duty_roster WHERE id=?
+SELECT * FROM duty_roster WHERE id=? FOR UPDATE
+SELECT * FROM encounters WHERE id=?
+SELECT * FROM encounters WHERE id=?
+SELECT * FROM encounters WHERE id=? FOR UPDATE
+SELECT * FROM encounters WHERE id=? FOR UPDATE
+SELECT * FROM encounters WHERE patient_id=? ORDER BY started_at DESC
+SELECT * FROM enterprise_roles ORDER BY name
+SELECT * FROM enterprise_roles WHERE name=? FOR UPDATE
+SELECT * FROM helpdesk_messages WHERE ticket_id=? ORDER BY id
+SELECT * FROM helpdesk_tickets ORDER BY updated_at DESC
+SELECT * FROM helpdesk_tickets WHERE created_by=? ORDER BY updated_at DESC
+SELECT * FROM helpdesk_tickets WHERE id=?
+SELECT * FROM hospital_settings ORDER BY setting_key
+SELECT * FROM insurance_claims ORDER BY id DESC
+SELECT * FROM insurance_claims WHERE id=?
+SELECT * FROM insurance_claims WHERE id=?
+SELECT * FROM insurance_claims WHERE id=?
+SELECT * FROM insurance_claims WHERE id=? FOR UPDATE
+SELECT * FROM insurance_claims WHERE id=? FOR UPDATE
+SELECT * FROM insurance_claims WHERE id=? FOR UPDATE
+SELECT * FROM insurance_claims WHERE id=? FOR UPDATE
+SELECT * FROM insurance_claims WHERE id=? FOR UPDATE
+SELECT * FROM insurance_claims WHERE id=? FOR UPDATE
+SELECT * FROM insurance_enhancements WHERE claim_id=?
+SELECT * FROM insurance_enhancements WHERE id=? FOR UPDATE
+SELECT * FROM insurance_events WHERE claim_id=? ORDER BY id
+SELECT * FROM insurance_invoice_allocations WHERE claim_id=? ORDER BY invoice_id FOR UPDATE
+SELECT * FROM insurance_lines WHERE claim_id=?
+SELECT * FROM insurance_settlements WHERE claim_id=?
+SELECT * FROM inventory_batches WHERE id=?
+SELECT * FROM inventory_batches WHERE id=? FOR UPDATE
+SELECT * FROM inventory_batches WHERE id=? FOR UPDATE
+SELECT * FROM inventory_batches WHERE inventory_item_id=? AND expires_on>=CURDATE() AND quantity>0 ORDER BY expires_on,id FOR UPDATE
+SELECT * FROM inventory_items WHERE id=?
+SELECT * FROM inventory_items WHERE id=?
+SELECT * FROM inventory_items WHERE id=? FOR UPDATE
+SELECT * FROM invoice_adjustments WHERE invoice_id=?
+SELECT * FROM invoice_items WHERE invoice_id=?
+SELECT * FROM invoices WHERE id=?
+SELECT * FROM invoices WHERE id=?
+SELECT * FROM invoices WHERE id=?
+SELECT * FROM invoices WHERE id=? FOR UPDATE
+SELECT * FROM invoices WHERE id=? FOR UPDATE
+SELECT * FROM invoices WHERE id=? FOR UPDATE
+SELECT * FROM invoices WHERE id=? FOR UPDATE
+SELECT * FROM invoices WHERE id=? FOR UPDATE
+SELECT * FROM invoices WHERE id=? FOR UPDATE
+SELECT * FROM invoices WHERE patient_id=? ORDER BY created_at DESC
+SELECT * FROM ipd_beds ORDER BY ward,bed_no
+SELECT * FROM ipd_beds WHERE id=? FOR UPDATE
+SELECT * FROM ipd_beds WHERE id=? FOR UPDATE
+SELECT * FROM ipd_beds WHERE id=? FOR UPDATE
+SELECT * FROM issued_documents WHERE id=?
+SELECT * FROM lab_order_items WHERE id=?
+SELECT * FROM lab_order_items WHERE id=? FOR UPDATE
+SELECT * FROM lab_order_items WHERE id=? FOR UPDATE
+SELECT * FROM lab_orders WHERE id=?
+SELECT * FROM leave_requests WHERE employee_id=? ORDER BY requested_at DESC
+SELECT * FROM leave_requests WHERE id=?
+SELECT * FROM medication_administrations ORDER BY scheduled_at
+SELECT * FROM medication_administrations WHERE id=? FOR UPDATE
+SELECT * FROM medication_orders WHERE id=? FOR UPDATE
+SELECT * FROM medication_orders WHERE id=? FOR UPDATE
+SELECT * FROM medication_orders WHERE id=? FOR UPDATE
+SELECT * FROM notifications WHERE username=? ORDER BY id DESC LIMIT 200
+SELECT * FROM patient_identity_locks WHERE mobile=? FOR UPDATE
+SELECT * FROM patients WHERE id=?
+SELECT * FROM patients WHERE id=?
+SELECT * FROM patients WHERE id=?
+SELECT * FROM payments WHERE invoice_id=?
+SELECT * FROM permissions ORDER BY code
+SELECT * FROM pharmacy_dispenses WHERE id=? FOR UPDATE
+SELECT * FROM prescription_items WHERE prescription_id=?
+SELECT * FROM prescription_items WHERE prescription_id=?
+SELECT * FROM prescriptions WHERE id=? FOR UPDATE
+SELECT * FROM purchase_order_lines WHERE id=? FOR UPDATE
+SELECT * FROM radiology_orders WHERE id=? AND status='VERIFIED'
+SELECT * FROM radiology_orders WHERE id=? FOR UPDATE
+SELECT * FROM refunds WHERE invoice_id=?
+SELECT * FROM reschedule_requests ORDER BY created_at DESC
+SELECT * FROM reschedule_requests WHERE id=? FOR UPDATE
+SELECT * FROM return_credit_requests WHERE id=? FOR UPDATE
+SELECT * FROM sample_dispatches ORDER BY id DESC
+SELECT * FROM shift_requests WHERE id=? FOR UPDATE
+SELECT * FROM shift_requests WHERE requested_by=? ORDER BY id DESC
+SELECT * FROM staff_accounts WHERE id=? FOR UPDATE
+SELECT * FROM suppliers ORDER BY name
+SELECT * FROM ward_stock WHERE batch_id=? AND ward=? FOR UPDATE
+SELECT * FROM ward_stock WHERE batch_id=? AND ward=? FOR UPDATE
+SELECT * FROM ward_stock WHERE batch_id=? AND ward=? FOR UPDATE
+SELECT COALESCE(AVG(TIMESTAMPDIFF(MINUTE,e.started_at,e.consultation_at)),0) FROM encounters e LEFT JOIN departments d ON d.id=e.department_id WHERE e.started_at>=? AND e.started_at<? AND (?='' OR d.name=?)
+SELECT COALESCE(SUM(amount),0) FROM insurance_invoice_allocations WHERE claim_id=?
+SELECT COALESCE(SUM(amount),0) FROM payments WHERE invoice_id=? AND method<>'INSURANCE'
+SELECT COALESCE(SUM(amount),0) FROM payments WHERE invoice_id=? AND method<>'INSURANCE'
+SELECT COALESCE(SUM(amount),0) FROM payments WHERE paid_at>=? AND paid_at<?
+SELECT COALESCE(SUM(amount),0) FROM payments WHERE paid_at>=? AND paid_at<?
+SELECT COALESCE(SUM(amount),0) FROM refunds WHERE invoice_id=?
+SELECT COALESCE(SUM(amount),0) FROM refunds WHERE invoice_id=? AND method<>'INSURANCE'
+SELECT COALESCE(SUM(amount-settled),0) FROM insurance_invoice_allocations WHERE invoice_id=?
+SELECT COALESCE(SUM(i.total),0) FROM invoices i LEFT JOIN encounters e ON e.id=i.encounter_id LEFT JOIN departments d ON d.id=COALESCE(i.department_id,e.department_id) WHERE i.created_at>=? AND i.created_at<? AND (?='' OR d.name=?)
+SELECT COALESCE(SUM(p.amount),0) FROM payments p JOIN invoices i ON i.id=p.invoice_id LEFT JOIN encounters e ON e.id=i.encounter_id LEFT JOIN departments d ON d.id=COALESCE(i.department_id,e.department_id) WHERE p.paid_at>=? AND p.paid_at<? AND (?='' OR d.name=?)
+SELECT COALESCE(SUM(quantity),0) FROM consumable_returns WHERE movement_id=?
+SELECT COALESCE(SUM(quantity-returned),0) FROM pharmacy_dispenses WHERE medication_order_id=?
+SELECT COALESCE(SUM(quantity-returned),0) FROM pharmacy_dispenses WHERE medication_order_id=?
+SELECT COALESCE(SUM(quantity-returned),0) FROM pharmacy_dispenses WHERE medication_order_id=?
+SELECT COALESCE(SUM(r.amount),0) FROM refunds r JOIN invoices i ON i.id=r.invoice_id LEFT JOIN encounters e ON e.id=i.encounter_id LEFT JOIN departments d ON d.id=COALESCE(i.department_id,e.department_id) WHERE r.created_at>=? AND r.created_at<? AND (?='' OR d.name=?)
+SELECT COALESCE(d.name,'General / unassigned') department,COUNT(e.id) visits,COALESCE(AVG(TIMESTAMPDIFF(MINUTE,e.started_at,e.consultation_at)),0) average_wait_minutes FROM encounters e LEFT JOIN departments d ON d.id=e.department_id WHERE e.started_at>=? AND e.started_at<? GROUP BY COALESCE(d.name,'General / unassigned')
+SELECT COUNT(*) FROM  WHERE id=?
+SELECT COUNT(*) FROM admissions WHERE admitted_at>=? AND admitted_at<?
+SELECT COUNT(*) FROM admissions WHERE id=? AND status='ADMITTED'
+SELECT COUNT(*) FROM admissions WHERE patient_id=? AND status='ADMITTED'
+SELECT COUNT(*) FROM appointment_slots WHERE doctor_employee_id=? AND starts_at<? AND ends_at>?
+SELECT COUNT(*) FROM appointment_slots WHERE doctor_employee_id=? AND starts_at<? AND ends_at>?
+SELECT COUNT(*) FROM appointment_slots a JOIN appointment_slots b ON b.doctor_employee_id=? AND a.starts_at<b.ends_at AND a.ends_at>b.starts_at WHERE a.doctor_employee_id=? AND a.starts_at>=? AND a.starts_at<?
+SELECT COUNT(*) FROM appointments WHERE id=? AND patient_id=?
+SELECT COUNT(*) FROM care_quality_events WHERE created_at>=? AND created_at<? AND (?='' OR department=?)
+SELECT COUNT(*) FROM consultations WHERE encounter_id=?
+SELECT COUNT(*) FROM consultations WHERE encounter_id=?
+SELECT COUNT(*) FROM doctor_profiles WHERE employee_id=?
+SELECT COUNT(*) FROM duty_roster WHERE employee_id=? AND status='SCHEDULED' AND TIMESTAMP(shift_date,starts_at)<=? AND TIMESTAMP(COALESCE(ends_on,shift_date),ends_at)>=?
+SELECT COUNT(*) FROM duty_roster WHERE employee_id=? AND status='SCHEDULED' AND TIMESTAMP(shift_date,starts_at)<? AND TIMESTAMP(COALESCE(ends_on,shift_date),ends_at)>? AND (? IS NULL OR id<>?)
+SELECT COUNT(*) FROM employees WHERE id=?
+SELECT COUNT(*) FROM employees WHERE id=?
+SELECT COUNT(*) FROM encounters WHERE started_at>=? AND started_at<?
+SELECT COUNT(*) FROM encounters e LEFT JOIN departments d ON d.id=e.department_id WHERE e.started_at>=? AND e.started_at<? AND (?='' OR d.name=?)
+SELECT COUNT(*) FROM enterprise_roles WHERE name=?
+SELECT COUNT(*) FROM enterprise_roles WHERE name=?
+SELECT COUNT(*) FROM invoices WHERE encounter_id=? AND status<>'PAID'
+SELECT COUNT(*) FROM invoices WHERE encounter_id=? AND status<>'PAID'
+SELECT COUNT(*) FROM invoices WHERE id=? AND status='PAID'
+SELECT COUNT(*) FROM ipd_beds WHERE ward=?
+SELECT COUNT(*) FROM leave_requests WHERE employee_id=?
+SELECT COUNT(*) FROM leave_requests WHERE employee_id=? AND status='APPROVED' AND start_date<=? AND end_date>=?
+SELECT COUNT(*) FROM medication_administrations WHERE medication_order_id=? AND status='GIVEN'
+SELECT COUNT(*) FROM medication_administrations WHERE medication_order_id=? AND status='GIVEN'
+SELECT COUNT(*) FROM medication_administrations WHERE status='MISSED' AND scheduled_at>=? AND scheduled_at<?
+SELECT COUNT(*) FROM patients
+SELECT COUNT(*) FROM patients WHERE created_at>=? AND created_at<?
+SELECT COUNT(*) FROM patients WHERE created_at>=? AND created_at<?
+SELECT COUNT(*) FROM patients WHERE id=?
+SELECT COUNT(*) FROM patients WHERE id=?
+SELECT COUNT(*) FROM patients WHERE mobile=? AND LOWER(first_name)=LOWER(?) AND LOWER(COALESCE(last_name,''))=LOWER(?)
+SELECT COUNT(*) FROM permissions WHERE code=?
+SELECT COUNT(*) FROM prescription_items WHERE prescription_id=? AND medicine_name=?
+SELECT COUNT(*) FROM registration_payments WHERE patient_id=? AND status='COMPLETED'
+SELECT COUNT(*) FROM salary_slips WHERE employee_id=?
+SELECT COUNT(*) FROM sample_dispatches WHERE lab_order_item_id=?
+SELECT COUNT(*) FROM sample_dispatches WHERE lab_order_item_id=? AND status='RECEIVED'
+SELECT COUNT(*) FROM slot_reservations WHERE slot_id=?
+SELECT COUNT(*) FROM staff_accounts WHERE employee_id=?
+SELECT COUNT(*) FROM staff_accounts WHERE patient_id=?
+SELECT COUNT(*) FROM staff_accounts WHERE role='ADMIN' AND enabled=1
+SELECT COUNT(*) FROM staff_accounts WHERE username=?
+SELECT COUNT(*) FROM staff_accounts a JOIN role_permissions p ON p.role_name=a.role WHERE a.username=? AND p.permission_code IN ('clinical.consult','nursing.write') AND a.enabled=1
+SELECT DATE(paid_at) day,SUM(amount) collections FROM payments WHERE paid_at>=? AND paid_at<? GROUP BY DATE(paid_at) ORDER BY day
+SELECT DISTINCT a.username FROM staff_accounts a JOIN role_permissions p ON p.role_name=a.role WHERE p.permission_code=? AND a.enabled=1
+SELECT DISTINCT a.username id,a.username label FROM staff_accounts a JOIN role_permissions p ON p.role_name=a.role WHERE p.permission_code IN ('clinical.consult','nursing.write') AND a.enabled=1
+SELECT DISTINCT e.id FROM employees e JOIN staff_accounts s ON s.employee_id=e.id JOIN role_permissions p ON p.role_name=s.role WHERE e.name=? AND e.status='ACTIVE' AND e.designation='DOCTOR' AND p.permission_code='clinical.consult' AND s.enabled=1
+SELECT DISTINCT e.id,e.name label FROM employees e JOIN staff_accounts a ON a.employee_id=e.id JOIN role_permissions p ON p.role_name=a.role WHERE p.permission_code='clinical.consult' AND e.designation='DOCTOR' AND a.enabled=1 AND e.status='ACTIVE' ORDER BY e.name
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT LAST_INSERT_ID()
+SELECT a.*,e.name FROM attendance a JOIN employees e ON e.id=a.employee_id ORDER BY work_date DESC
+SELECT a.*,i.invoice_no FROM insurance_invoice_allocations a JOIN invoices i ON i.id=a.invoice_id WHERE a.claim_id=?
+SELECT a.id,a.patient_id,CONCAT(a.admission_no,' / ',p.first_name,' / ',a.ward,' ',a.bed_no) label FROM admissions a JOIN patients p ON p.id=a.patient_id WHERE a.status='ADMITTED'
+SELECT a.id,a.username,a.role,a.enabled,a.employee_id,e.name employee_name FROM staff_accounts a LEFT JOIN employees e ON e.id=a.employee_id ORDER BY a.username
+SELECT admission_id FROM medication_administrations WHERE id=?
+SELECT b.*,i.name,i.sku FROM inventory_batches b JOIN inventory_items i ON i.id=b.inventory_item_id ORDER BY b.expires_on,b.id
+SELECT b.*,p.uhid reserved_mrn,a.admission_no,pa.id current_patient_id,pa.uhid current_mrn,CONCAT(pa.first_name,' ',COALESCE(pa.last_name,'')) patient_name FROM ipd_beds b LEFT JOIN patients p ON p.id=b.reserved_patient_id LEFT JOIN admissions a ON a.ward=b.ward AND a.bed_no=b.bed_no AND a.status='ADMITTED' LEFT JOIN patients pa ON pa.id=a.patient_id ORDER BY b.ward,b.floor_name,b.bed_no
+SELECT c.*,e.encounter_no,e.doctor_name FROM consultations c JOIN encounters e ON e.id=c.encounter_id WHERE e.patient_id=? ORDER BY c.id DESC
+SELECT c.*,i.invoice_no,p.uhid FROM return_credit_requests c JOIN invoices i ON i.id=c.invoice_id JOIN patients p ON p.id=i.patient_id ORDER BY c.id DESC
+SELECT c.*,p.uhid,p.first_name FROM care_teams c JOIN patients p ON p.id=c.patient_id
+SELECT c.*,p.uhid,p.first_name,a.ward,a.bed_no FROM insurance_claims c JOIN patients p ON p.id=c.patient_id LEFT JOIN admissions a ON a.id=c.admission_id ORDER BY c.id DESC
+SELECT code id,CONCAT(name,' / ',price) label,default_processing_type FROM lab_test_catalog WHERE active=1
+SELECT consultation_fee FROM doctor_profiles WHERE employee_id=?
+SELECT d.*,e.name AS doctor_name FROM doctor_profiles d JOIN employees e ON e.id=d.employee_id JOIN staff_accounts s ON s.employee_id=e.id WHERE s.username=?
+SELECT d.*,e.name AS doctor_name,e.department FROM doctor_profiles d JOIN employees e ON e.id=d.employee_id ORDER BY e.name
+SELECT d.*,i.name,p.uhid,CONCAT(p.first_name,' ',COALESCE(p.last_name,'')) patient_name FROM pharmacy_dispenses d JOIN inventory_items i ON i.id=d.inventory_item_id JOIN patients p ON p.id=d.patient_id ORDER BY d.id DESC
+SELECT d.id FROM departments d JOIN employees e ON e.department=d.name WHERE e.id=?
+SELECT department FROM employees WHERE id=?
+SELECT department,designation FROM employees WHERE id=?
+SELECT department,designation FROM employees WHERE id=?
+SELECT department_id FROM encounters WHERE id=?
+SELECT document_type,issued_at,issued_by,'VALID' status FROM issued_documents WHERE verification_token=?
+SELECT e.*,c.provider FROM insurance_enhancements e JOIN insurance_claims c ON c.id=e.claim_id ORDER BY e.id DESC
+SELECT employee_id FROM leave_requests WHERE id=?
+SELECT employee_id FROM staff_accounts WHERE username=?
+SELECT employee_id FROM staff_accounts WHERE username=?
+SELECT encounter_id FROM invoices WHERE id=?
+SELECT h.username FROM department_heads h JOIN employees e ON e.department=h.department WHERE e.id=?
+SELECT i.*,GREATEST(i.total-i.paid-COALESCE((SELECT SUM(a.amount-a.settled) FROM insurance_invoice_allocations a WHERE a.invoice_id=i.id),0),0) patient_outstanding,CONCAT(p.first_name,' ',COALESCE(p.last_name,'')) patient_name,p.uhid FROM invoices i JOIN patients p ON p.id=i.patient_id ORDER BY i.id DESC
+SELECT i.*,o.patient_id FROM lab_order_items i JOIN lab_orders o ON o.id=i.lab_order_id ORDER BY i.id DESC
+SELECT i.test_name,i.result_value,i.result_unit,i.reference_range,i.verified_by,i.verified_at FROM lab_order_items i JOIN lab_orders o ON o.id=i.lab_order_id WHERE o.patient_id=? AND i.status IN ('VERIFIED','COMPLETED')
+SELECT id FROM admissions WHERE id=? AND status='ADMITTED'
+SELECT id FROM admissions WHERE id=? AND status='ADMITTED'
+SELECT id FROM departments WHERE code=?
+SELECT id FROM employees WHERE id=? AND status='ACTIVE' FOR UPDATE
+SELECT id FROM inventory_batches WHERE id=? FOR UPDATE
+SELECT id FROM inventory_items WHERE id=? FOR UPDATE
+SELECT id FROM inventory_items WHERE id=? FOR UPDATE
+SELECT id FROM invoices WHERE id=? FOR UPDATE
+SELECT id FROM invoices WHERE patient_id=? AND encounter_id <=> ? AND department_id <=> ? AND status='UNPAID' ORDER BY id DESC LIMIT 1 FOR UPDATE
+SELECT id FROM patients WHERE id=?
+SELECT id FROM patients WHERE id=? FOR UPDATE
+SELECT id FROM patients WHERE id=? FOR UPDATE
+SELECT id FROM staff_accounts WHERE role='ADMIN' FOR UPDATE
+SELECT id,CONCAT(employee_no,' / ',name) label FROM employees WHERE status='ACTIVE' ORDER BY name
+SELECT id,CONCAT(invoice_no,' / balance ',total-paid) label FROM invoices ORDER BY id DESC LIMIT 1000
+SELECT id,CONCAT(sku,' / ',name) label,name FROM inventory_items ORDER BY name
+SELECT id,CONCAT(ward,' / ',bed_no,' / ',status) label,status FROM ipd_beds
+SELECT id,document_type,issued_by,issued_at FROM issued_documents WHERE patient_id=? ORDER BY issued_at DESC
+SELECT id,employee_no,name,department,designation,mobile,status FROM employees WHERE id=?
+SELECT id,id patient_id,uhid,CONCAT(first_name,' ',COALESCE(last_name,'')) label FROM patients ORDER BY id DESC LIMIT 1000
+SELECT id,name label FROM departments ORDER BY name
+SELECT id,name label FROM external_labs WHERE active=1
+SELECT id,patient_id FROM issued_documents WHERE document_type=? AND reference_id=?
+SELECT id,patient_id,CONCAT(encounter_no,' / ',status) label,status FROM encounters ORDER BY id DESC LIMIT 1000
+SELECT id,patient_id,document_type,reference_id,issued_by,issued_at FROM issued_documents ORDER BY id DESC
+SELECT id,patient_id,document_type,reference_id,issued_by,issued_at FROM issued_documents WHERE patient_id=? ORDER BY id DESC
+SELECT id,salary_month,basic,allowances,deductions,net_pay,payment_status,credited_at FROM salary_slips WHERE employee_id=? ORDER BY salary_month DESC
+SELECT id,status,reserved_patient_id FROM ipd_beds WHERE ward=? AND bed_no=? FOR UPDATE
+SELECT id,username,role,employee_id,enabled FROM staff_accounts ORDER BY id
+SELECT invoice_id FROM insurance_invoice_allocations WHERE claim_id=?
+SELECT invoice_id FROM invoice_items WHERE charge_key=?
+SELECT invoice_id FROM invoice_items WHERE charge_key=?
+SELECT invoice_id,unit_price FROM invoice_items WHERE charge_key=?
+SELECT l.*,e.name employee_name FROM leave_requests l JOIN employees e ON e.id=l.employee_id JOIN department_heads h ON h.department=e.department WHERE h.username=? ORDER BY l.requested_at DESC
+SELECT l.*,e.name employee_name FROM leave_requests l JOIN employees e ON e.id=l.employee_id ORDER BY l.requested_at DESC
+SELECT l.*,i.name FROM purchase_order_lines l JOIN inventory_items i ON i.id=l.inventory_item_id WHERE purchase_order_id=?
+SELECT m.*,b.batch_no,i.name FROM batch_movements m JOIN inventory_batches b ON b.id=m.batch_id JOIN inventory_items i ON i.id=b.inventory_item_id ORDER BY m.id DESC LIMIT 500
+SELECT m.*,b.batch_no,i.name,p.uhid FROM batch_movements m JOIN inventory_batches b ON b.id=m.batch_id JOIN inventory_items i ON i.id=b.inventory_item_id JOIN patients p ON p.id=m.patient_id WHERE m.reason='PATIENT_CONSUMABLE' ORDER BY m.id DESC
+SELECT n.*,a.patient_id,a.ward,a.bed_no FROM nursing_notes n JOIN admissions a ON a.id=n.admission_id ORDER BY n.id DESC
+SELECT name FROM employees WHERE id=?
+SELECT name FROM employees WHERE id=? AND designation='DOCTOR' AND status='ACTIVE'
+SELECT name FROM employees WHERE id=? AND designation='DOCTOR' AND status='ACTIVE'
+SELECT name FROM inventory_items WHERE id=?
+SELECT name FROM inventory_items WHERE id=?
+SELECT name id,label FROM enterprise_roles WHERE name<>'PATIENT' ORDER BY name
+SELECT name,default_processing_type,price,result_unit,reference_range FROM lab_test_catalog WHERE code=? AND active=1
+SELECT name,designation FROM employees WHERE id=?
+SELECT next_value FROM employee_number_sequence WHERE id=1 FOR UPDATE
+SELECT next_value FROM patient_number_sequence WHERE id=1 FOR UPDATE
+SELECT o.*,p.uhid,p.first_name,a.ward,a.bed_no,COALESCE((SELECT SUM(d.quantity-d.returned) FROM pharmacy_dispenses d WHERE d.medication_order_id=o.id),0) dispensed_quantity FROM medication_orders o JOIN patients p ON p.id=o.patient_id JOIN admissions a ON a.id=o.admission_id ORDER BY o.id DESC
+SELECT o.patient_id,i.* FROM lab_order_items i JOIN lab_orders o ON o.id=i.lab_order_id WHERE i.id=? AND i.status IN ('VERIFIED','COMPLETED')
+SELECT occupied FROM ipd_beds WHERE id=?
+SELECT p.*,e.doctor_name,e.signed_by FROM prescriptions p JOIN encounters e ON e.id=p.encounter_id WHERE p.id=? AND p.status='FINAL'
+SELECT p.*,s.name supplier FROM purchase_orders p JOIN suppliers s ON s.id=p.supplier_id ORDER BY p.id DESC
+SELECT password_hash FROM staff_accounts WHERE username=?
+SELECT password_hash,role,enabled FROM staff_accounts WHERE username=?
+SELECT patient_id FROM  WHERE id=?
+SELECT patient_id FROM admissions WHERE id=?
+SELECT patient_id FROM admissions WHERE id=?
+SELECT patient_id FROM appointments WHERE doctor_employee_id=? AND appointment_at>=? AND appointment_at<? AND status='BOOKED'
+SELECT patient_id FROM encounters WHERE id=?
+SELECT patient_id FROM encounters WHERE id=?
+SELECT patient_id FROM encounters WHERE id=?
+SELECT patient_id FROM encounters WHERE id=?
+SELECT patient_id FROM encounters WHERE id=?
+SELECT patient_id FROM staff_accounts WHERE username=?
+SELECT patient_id,encounter_id FROM admissions WHERE id=?
+SELECT patient_id,status FROM encounters WHERE id=?
+SELECT permission_code FROM role_permissions WHERE role_name=?
+SELECT permission_code FROM role_permissions WHERE role_name=? ORDER BY permission_code
+SELECT pr.*,p.uhid,CONCAT(p.first_name,' ',COALESCE(p.last_name,'')) patient_name FROM prescriptions pr JOIN patients p ON p.id=pr.patient_id ORDER BY pr.id DESC
+SELECT pr.id,pr.created_at,i.medicine_name,i.dose,i.frequency,i.duration,i.instructions FROM prescriptions pr JOIN prescription_items i ON i.prescription_id=pr.id WHERE pr.patient_id=? AND pr.status='FINAL' ORDER BY pr.created_at DESC
+SELECT r.*,e.name FROM duty_roster r JOIN employees e ON e.id=r.employee_id ORDER BY shift_date DESC
+SELECT r.*,e.name FROM duty_roster r JOIN employees e ON e.id=r.employee_id WHERE r.id=? FOR UPDATE
+SELECT r.*,e.name,e.department FROM duty_roster r JOIN employees e ON e.id=r.employee_id ORDER BY shift_date DESC,starts_at
+SELECT r.*,p.uhid,p.first_name FROM admission_recommendations r JOIN patients p ON p.id=r.patient_id ORDER BY r.id DESC
+SELECT role,employee_id FROM staff_accounts WHERE username=?
+SELECT s.* FROM appointment_slots s LEFT JOIN slot_reservations r ON r.slot_id=s.id WHERE r.slot_id IS NULL AND s.blocked=0 AND s.starts_at>NOW() AND EXISTS(SELECT 1 FROM duty_roster r WHERE r.employee_id=s.doctor_employee_id AND r.status='SCHEDULED' AND s.starts_at>=TIMESTAMP(r.shift_date,r.starts_at) AND s.ends_at<=TIMESTAMP(COALESCE(r.ends_on,r.shift_date),r.ends_at)) ORDER BY s.starts_at LIMIT 200
+SELECT s.*,e.name FROM salary_slips s JOIN employees e ON e.id=s.employee_id ORDER BY salary_month DESC
+SELECT s.*,e.name replacement_name,r.shift_date,r.starts_at,r.ends_at FROM shift_requests s JOIN employees e ON e.id=s.replacement_employee_id JOIN duty_roster r ON r.id=s.roster_id JOIN employees original ON original.id=r.employee_id JOIN department_heads h ON h.department=original.department WHERE h.username=? ORDER BY s.id DESC
+SELECT s.*,e.name replacement_name,r.shift_date,r.starts_at,r.ends_at FROM shift_requests s JOIN employees e ON e.id=s.replacement_employee_id JOIN duty_roster r ON r.id=s.roster_id ORDER BY s.id DESC
+SELECT setting_value FROM hospital_settings WHERE setting_key='consultation_slot_minutes'
+SELECT setting_value FROM hospital_settings WHERE setting_key='default_consultation_fee'
+SELECT setting_value FROM hospital_settings WHERE setting_key='early_medication_minutes'
+SELECT setting_value FROM hospital_settings WHERE setting_key='hospital_name'
+SELECT setting_value FROM hospital_settings WHERE setting_key='registration_fee'
+SELECT setting_value FROM hospital_settings WHERE setting_key='reschedule_cutoff_minutes'
+SELECT status FROM encounters WHERE id=?
+SELECT token_version FROM staff_accounts WHERE username=?
+SELECT token_version FROM staff_accounts WHERE username=?
+SELECT username FROM department_heads WHERE department=?
+SELECT username FROM staff_accounts WHERE patient_id=?
+SELECT username FROM staff_accounts WHERE username=? AND enabled=1
+SELECT username id,username label FROM staff_accounts WHERE enabled=1 AND role<>'PATIENT' ORDER BY username
+SELECT v.* FROM vitals v JOIN encounters e ON e.id=v.encounter_id WHERE e.patient_id=? ORDER BY v.id DESC
+SELECT w.*,b.batch_no,b.expires_on,b.sale_price,b.inventory_item_id,i.name FROM ward_stock w JOIN inventory_batches b ON b.id=w.batch_id JOIN inventory_items i ON i.id=b.inventory_item_id
+UPDATE admission_bed_segments SET ended_at=NOW(),invoice_id=? WHERE id=?
+UPDATE admission_recommendations SET status='ALLOCATED',admission_id=? WHERE id=?
+UPDATE admissions SET status='DISCHARGED',discharged_at=NOW() WHERE id=?
+UPDATE admissions SET ward=?,bed_no=? WHERE id=?
+UPDATE appointment_slots SET blocked=1 WHERE doctor_employee_id=? AND DATE(starts_at) BETWEEN ? AND ?
+UPDATE appointment_slots SET blocked=1 WHERE doctor_employee_id=? AND DATE(starts_at)=?
+UPDATE appointment_slots SET blocked=1 WHERE doctor_employee_id=? AND starts_at>NOW()
+UPDATE appointment_slots SET doctor_employee_id=(SELECT id FROM employees WHERE name='Dr Synthetic Demo' LIMIT 1)
+UPDATE appointment_slots SET doctor_employee_id=?,doctor_name=?,blocked=0 WHERE doctor_employee_id=? AND starts_at>=? AND starts_at<?
+UPDATE appointments SET doctor_employee_id=?,doctor_name=? WHERE doctor_employee_id=? AND appointment_at>=? AND appointment_at<? AND status='BOOKED'
+UPDATE appointments SET slot_id=?,doctor_name=?,appointment_at=?,doctor_employee_id=? WHERE id=?
+UPDATE appointments SET status='BOOKED' WHERE id=?
+UPDATE appointments SET status='CANCELLED' WHERE id=?
+UPDATE appointments a JOIN encounters e ON e.appointment_id=a.id SET a.status='COMPLETED' WHERE e.id=? AND e.status='COMPLETED'
+UPDATE dispense_allocations SET returned=returned+? WHERE id=?
+UPDATE duty_roster SET status='ABSENT' WHERE id=?
+UPDATE duty_roster SET status='ON_LEAVE' WHERE employee_id=? AND shift_date<=? AND COALESCE(ends_on,shift_date)>=? AND status='SCHEDULED'
+UPDATE duty_roster SET status='REPLACED' WHERE id=?
+UPDATE employee_number_sequence SET next_value=? WHERE id=1
+UPDATE employee_number_sequence SET next_value=next_value+1 WHERE id=1
+UPDATE encounters SET consultation_at=NOW() WHERE id=?
+UPDATE encounters SET signed_by=?,signed_at=NOW() WHERE id=?
+UPDATE encounters SET status='BILLING',signed_by=?,signed_at=NOW() WHERE id=?
+UPDATE encounters SET status='COMPLETED',completed_at=NOW() WHERE id=? AND status='BILLING'
+UPDATE helpdesk_tickets SET due_at=DATE_ADD(created_at,INTERVAL CASE priority WHEN 'URGENT' THEN 1 WHEN 'HIGH' THEN 4 ELSE 24 END HOUR) WHERE id=LAST_INSERT_ID()
+UPDATE helpdesk_tickets SET status=?,assigned_to=?,resolution=?,department=?,updated_at=NOW() WHERE id=?
+UPDATE hospital_settings SET setting_value=? WHERE setting_key=?
+UPDATE insurance_claims SET approved_amount=? WHERE id=?
+UPDATE insurance_claims SET approved_amount=settled_amount WHERE id=?
+UPDATE insurance_claims SET claim_amount=?,non_payable=? WHERE id=?
+UPDATE insurance_claims SET settled_amount=?,status=? WHERE id=?
+UPDATE insurance_claims SET status='APPROVED' WHERE id=?
+UPDATE insurance_claims SET status='ENHANCEMENT_REQUESTED' WHERE id=?
+UPDATE insurance_claims SET status=?,approved_amount=CASE WHEN ?='APPROVED' THEN ? ELSE approved_amount END,settled_amount=CASE WHEN ?='SETTLED' THEN ? ELSE settled_amount END WHERE id=?
+UPDATE insurance_enhancements SET status=?,decision_amount=?,notes=?,reviewed_by=? WHERE id=?
+UPDATE insurance_invoice_allocations SET amount=settled WHERE claim_id=?
+UPDATE insurance_invoice_allocations SET settled=settled+? WHERE id=?
+UPDATE inventory_batches SET quantity=quantity+? WHERE id=?
+UPDATE inventory_batches SET quantity=quantity+? WHERE id=?
+UPDATE inventory_batches SET quantity=quantity-? WHERE id=?
+UPDATE inventory_batches SET quantity=quantity-? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty+? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty+? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty+? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty+? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty-? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty-? WHERE id=?
+UPDATE inventory_items SET stock_qty=stock_qty-? WHERE id=?
+UPDATE invoices SET gross_total=total WHERE id=?
+UPDATE invoices SET paid=?,status=? WHERE id=?
+UPDATE invoices SET paid=paid+? WHERE id=?
+UPDATE invoices SET paid=paid+? WHERE id=?
+UPDATE invoices SET paid=paid-? WHERE id=?
+UPDATE invoices SET status=CASE WHEN paid>=total THEN 'PAID' WHEN total-paid<=COALESCE((SELECT SUM(a.amount-a.settled) FROM insurance_invoice_allocations a WHERE a.invoice_id=invoices.id),0) THEN 'INSURANCE_PENDING' WHEN paid>0 THEN 'PARTIALLY_PAID' ELSE 'UNPAID' END WHERE id=?
+UPDATE invoices SET total=?,discount_amount=discount_amount+?,tax_amount=tax_amount+? WHERE id=?
+UPDATE invoices SET total=?,paid=paid-?,discount_amount=discount_amount+? WHERE id=?
+UPDATE invoices SET total=total+?,gross_total=gross_total+? WHERE id=?
+UPDATE ipd_beds SET bed_type='ICU' WHERE ward='ICU'
+UPDATE ipd_beds SET occupied=0,status='CLEANING' WHERE ward=? AND bed_no=?
+UPDATE ipd_beds SET occupied=0,status='CLEANING' WHERE ward=? AND bed_no=?
+UPDATE ipd_beds SET occupied=1,status='OCCUPIED' WHERE id=?
+UPDATE ipd_beds SET occupied=1,status='OCCUPIED',reserved_patient_id=NULL WHERE id=?
+UPDATE ipd_beds SET status='AVAILABLE' WHERE id=? AND occupied=0 AND status='CLEANING'
+UPDATE ipd_beds SET status=?,reserved_patient_id=? WHERE id=?
+UPDATE ipd_beds SET ward=?,bed_no=?,floor_name=?,bed_type=?,daily_rate=? WHERE id=?
+UPDATE lab_order_items SET invoice_id=?,result_unit=?,reference_range=? WHERE id=?
+UPDATE lab_order_items SET sample_barcode=? WHERE id=?
+UPDATE lab_order_items SET status=?,result_value=COALESCE(?,result_value),result_unit=COALESCE(?,result_unit),reference_range=COALESCE(?,reference_range),verified_by=CASE WHEN ?='VERIFIED' THEN ? ELSE verified_by END,verified_at=CASE WHEN ?='VERIFIED' THEN NOW() ELSE verified_at END WHERE id=?
+UPDATE lab_orders SET status=CASE WHEN NOT EXISTS(SELECT 1 FROM lab_order_items WHERE lab_order_id=? AND status<>'COMPLETED') THEN 'COMPLETED' WHEN NOT EXISTS(SELECT 1 FROM lab_order_items WHERE lab_order_id=? AND status NOT IN ('VERIFIED','COMPLETED')) THEN 'VERIFIED' ELSE 'IN_PROGRESS' END WHERE id=?
+UPDATE leave_requests SET status=?,reviewed_by=?,reviewed_at=NOW() WHERE id=? AND status='PENDING'
+UPDATE medication_administrations SET status=?,notes=?,administered_by=?,administered_at=NOW() WHERE id=? AND status='ORDERED'
+UPDATE medication_orders SET status='VERIFIED',verified_by=?,verified_at=NOW() WHERE id=? AND status='ORDERED'
+UPDATE notifications SET is_read=1 WHERE id=? AND username=?
+UPDATE patient_number_sequence SET next_value=2 WHERE id=1
+UPDATE patient_number_sequence SET next_value=next_value+1 WHERE id=1
+UPDATE patients SET mobile=?,address=?,blood_group=? WHERE id=?
+UPDATE pharmacy_dispenses SET charge_amount=? WHERE id=?
+UPDATE pharmacy_dispenses SET returned=returned+? WHERE id=?
+UPDATE prescriptions SET status='FINAL' WHERE id=? AND status='DRAFT'
+UPDATE purchase_order_lines SET received=received+? WHERE id=?
+UPDATE purchase_orders SET status=CASE WHEN EXISTS(SELECT 1 FROM purchase_order_lines WHERE purchase_order_id=? AND received<quantity) THEN 'PARTIALLY_RECEIVED' ELSE 'RECEIVED' END WHERE id=?
+UPDATE radiology_orders SET status=?,report=COALESCE(?,report),verified_by=CASE WHEN ?='VERIFIED' THEN ? ELSE verified_by END,verified_at=CASE WHEN ?='VERIFIED' THEN NOW() ELSE verified_at END WHERE id=?
+UPDATE reschedule_requests SET status='CANCELLED',resolved_by=?,resolved_at=NOW() WHERE appointment_id=? AND status='PENDING'
+UPDATE reschedule_requests SET status='RESOLVED',resolved_by=?,resolved_at=NOW() WHERE id=?
+UPDATE reschedule_requests r JOIN appointments a ON a.id=r.appointment_id SET r.status='RESOLVED',r.resolved_by=?,r.resolved_at=NOW() WHERE r.status='PENDING' AND a.doctor_employee_id=? AND a.appointment_at>=? AND a.appointment_at<?
+UPDATE return_credit_requests SET status='APPLIED',reconciled_by=? WHERE id=?
+UPDATE salary_slips SET payment_status='PAID',bank_reference=?,reconciled_by=?,credited_at=NOW() WHERE id=? AND payment_status='PENDING'
+UPDATE sample_dispatches SET status='RECEIVED',received_time=NOW() WHERE id=? AND status='DISPATCHED'
+UPDATE shift_requests SET status=?,reviewed_by=?,reviewed_at=NOW() WHERE id=?
+UPDATE staff_accounts SET enabled=0,token_version=token_version+1 WHERE employee_id=?
+UPDATE staff_accounts SET enabled=? WHERE id=?
+UPDATE staff_accounts SET password_hash=? WHERE id=?
+UPDATE staff_accounts SET password_hash=?,token_version=token_version+1 WHERE username=?
+UPDATE staff_accounts SET role=? WHERE id=?
+UPDATE staff_accounts SET token_version=token_version+1 WHERE id=?
+UPDATE staff_accounts SET token_version=token_version+1 WHERE username=?
+UPDATE ward_stock SET quantity=quantity+? WHERE batch_id=? AND ward=?
+UPDATE ward_stock SET quantity=quantity-? WHERE batch_id=? AND ward=?
+UPDATE ward_stock SET quantity=quantity-? WHERE batch_id=? AND ward=?

@@ -1,0 +1,53 @@
+<div class="overlay" *ngIf="detail !== null">
+  <section
+    class="task-drawer detail-drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Record details"
+  >
+    <div class="drawer-heading">
+      <div>
+        <span class="eyebrow">CONNECTED PATIENT RECORD</span>
+        <h2>Record details</h2>
+      </div>
+      <button
+        type="button"
+        class="icon-button"
+        aria-label="Close details"
+        (click)="close.emit()"
+      >
+        ×
+      </button>
+    </div>
+    <ng-container
+      *ngTemplateOutlet="detailValue; context: { $implicit: detail }"
+    ></ng-container>
+  </section>
+</div>
+<ng-template #detailValue let-value
+  ><ng-container *ngIf="isArray(value)"
+    ><div class="detail-record" *ngFor="let row of rows(value)">
+      <ng-container
+        *ngTemplateOutlet="detailValue; context: { $implicit: row }"
+      ></ng-container>
+    </div>
+    <p class="muted" *ngIf="!rows(value).length">
+      No records available.
+    </p></ng-container
+  >
+  <dl *ngIf="isObject(value)">
+    <ng-container *ngFor="let key of keys(value)"
+      ><dt>{{ label(key) }}</dt>
+      <dd>
+        <ng-container
+          *ngTemplateOutlet="
+            detailValue;
+            context: { $implicit: property(value, key) }
+          "
+        ></ng-container></dd
+    ></ng-container>
+  </dl>
+  <p *ngIf="!isObject(value) && !isArray(value)">
+    {{ scalar(value) }}
+  </p></ng-template
+>

@@ -1,0 +1,235 @@
+DELETE /api/admissions/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/appointments/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/care/teams 
+DELETE /api/consultations/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/employees/{id} 
+DELETE /api/encounters/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/insurance/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/inventory/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/invoices/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/lab-order-items/{id} 
+DELETE /api/lab-orders/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/lab-tests/{id} 
+DELETE /api/patients/{id} 
+DELETE /api/radiology/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+DELETE /api/vitals/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+GET /api/admissions 
+GET /api/admissions/{id} 
+GET /api/analytics/monthly 
+GET /api/appointments 
+GET /api/appointments/{id} 
+GET /api/auth/me 
+GET /api/care/teams 
+GET /api/clinical/patients/{id} 
+GET /api/consultations 
+GET /api/consultations/{id} 
+GET /api/coverage/claims 
+GET /api/coverage/claims/{id} 
+GET /api/coverage/enhancements 
+GET /api/dashboard 
+GET /api/doctor-profiles 
+GET /api/doctor-profiles/mine 
+GET /api/documents 
+GET /api/documents/{id}/pdf 
+GET /api/employees 
+GET /api/employees/{id} 
+GET /api/encounters 
+GET /api/encounters/{id} 
+GET /api/enterprise/insurance 
+GET /api/enterprise/roster 
+GET /api/finance/invoices 
+GET /api/finance/invoices/{id} 
+GET /api/finance/return-credits 
+GET /api/helpdesk/tickets 
+GET /api/helpdesk/tickets/{id}/messages 
+GET /api/hr/admin/leaves 
+GET /api/hr/me/leaves 
+GET /api/hr/me/profile 
+GET /api/hr/me/salary 
+GET /api/inpatient/beds 
+GET /api/inpatient/medication-orders 
+GET /api/inpatient/nursing-notes 
+GET /api/inpatient/recommendations 
+GET /api/insurance 
+GET /api/insurance/{id} 
+GET /api/inventory 
+GET /api/inventory/{id} 
+GET /api/invoices 
+GET /api/invoices/{id} 
+GET /api/lab-order-items 
+GET /api/lab-order-items/{id} 
+GET /api/lab-orders 
+GET /api/lab-orders/{id} 
+GET /api/lab-tests 
+GET /api/lab-tests/{id} 
+GET /api/masters/departments 
+GET /api/notifications 
+GET /api/operations/ipd/beds 
+GET /api/operations/lab/dispatches 
+GET /api/operations/lab/items 
+GET /api/orders/prescriptions 
+GET /api/orders/prescriptions/{id}/items 
+GET /api/patient/appointments 
+GET /api/patient/documents 
+GET /api/patient/documents/{id}/pdf 
+GET /api/patient/invoices 
+GET /api/patient/prescriptions 
+GET /api/patient/profile 
+GET /api/patient/reports 
+GET /api/patient/slots 
+GET /api/patients 
+GET /api/patients/{id} 
+GET /api/pharmacy/batches 
+GET /api/pharmacy/dispenses 
+GET /api/pharmacy/movements 
+GET /api/pharmacy/patient-consumables 
+GET /api/pharmacy/purchases 
+GET /api/pharmacy/suppliers 
+GET /api/pharmacy/ward-stock 
+GET /api/portal/options 
+GET /api/public/documents/verify/{token} 
+GET /api/public/slots 
+GET /api/radiology 
+GET /api/radiology/{id} 
+GET /api/reports/export.pdf 
+GET /api/reports/export.xlsx 
+GET /api/reports/overview 
+GET /api/scheduling/requests 
+GET /api/scheduling/slots 
+GET /api/security/accounts 
+GET /api/security/audit 
+GET /api/security/permissions 
+GET /api/security/roles 
+GET /api/security/settings 
+GET /api/staff 
+GET /api/staffing/attendance 
+GET /api/staffing/heads 
+GET /api/staffing/payroll 
+GET /api/staffing/requests 
+GET /api/staffing/roster 
+GET /api/vitals 
+GET /api/vitals/{id} 
+GET /api/ward/medications 
+PATCH /api/security/accounts/{id} 
+POST /api/admissions @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/appointments @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/auth/login 
+POST /api/auth/logout 
+POST /api/auth/password 
+POST /api/care/teams 
+POST /api/consultations @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/coverage/claims/{id}/allocations 
+POST /api/coverage/claims/{id}/enhancements 
+POST /api/coverage/claims/{id}/settlements 
+POST /api/coverage/enhancements/{id}/review 
+POST /api/doctor-profiles 
+POST /api/documents/issue 
+POST /api/employees 
+POST /api/encounters @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/enterprise/claims 
+POST /api/enterprise/insurance/{id}/transition 
+POST /api/enterprise/radiology/{id}/transition 
+POST /api/enterprise/roster 
+POST /api/enterprise/roster/{id}/absent 
+POST /api/finance/invoices/{id}/adjustments 
+POST /api/finance/invoices/{id}/payments 
+POST /api/finance/invoices/{id}/refunds 
+POST /api/finance/return-credits/{id}/reconcile 
+POST /api/helpdesk/tickets 
+POST /api/helpdesk/tickets/{id}/messages 
+POST /api/helpdesk/tickets/{id}/review 
+POST /api/hr/admin/leaves/{id}/review 
+POST /api/hr/admin/salary 
+POST /api/hr/me/leaves 
+POST /api/inpatient/beds 
+POST /api/inpatient/beds/{id}/status 
+POST /api/inpatient/medication-orders 
+POST /api/inpatient/medication-orders/{id}/verify 
+POST /api/inpatient/nursing-notes 
+POST /api/inpatient/recommendations 
+POST /api/inpatient/recommendations/{id}/allocate 
+POST /api/insurance @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/inventory 
+POST /api/invoices @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/lab-order-items 
+POST /api/lab-orders @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/lab-tests 
+POST /api/masters/departments 
+POST /api/notifications/{id}/read 
+POST /api/operations/billing/invoices 
+POST /api/operations/billing/invoices/{id}/payments 
+POST /api/operations/ipd/admissions/{id}/discharge 
+POST /api/operations/ipd/admit 
+POST /api/operations/lab/dispatches 
+POST /api/operations/lab/dispatches/{id}/receive 
+POST /api/operations/lab/items/{id}/transition 
+POST /api/operations/lab/orders 
+POST /api/operations/pharmacy/inventory/{id}/dispense @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/operations/pharmacy/inventory/{id}/receive @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/orders/prescriptions 
+POST /api/orders/prescriptions/{id}/finalize 
+POST /api/orders/radiology 
+POST /api/patient/appointments/{id}/cancel 
+POST /api/patient/appointments/{id}/reschedule 
+POST /api/patient/appointments/{id}/reschedule-request 
+POST /api/patient/book 
+POST /api/patient/registration-fee-demo 
+POST /api/patients 
+POST /api/pharmacy/batches/{id}/action 
+POST /api/pharmacy/consumable-returns 
+POST /api/pharmacy/dispenses 
+POST /api/pharmacy/dispenses/{id}/return 
+POST /api/pharmacy/purchases 
+POST /api/pharmacy/receipts 
+POST /api/pharmacy/suppliers 
+POST /api/pharmacy/ward-stock/{id}/action 
+POST /api/pharmacy/ward-stock/{id}/consume 
+POST /api/public/register 
+POST /api/radiology @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/reports/quality 
+POST /api/scheduling/appointments/{id}/cancel 
+POST /api/scheduling/appointments/{id}/reschedule 
+POST /api/scheduling/book 
+POST /api/scheduling/patient-access 
+POST /api/scheduling/provisional 
+POST /api/scheduling/requests/{id}/resolve 
+POST /api/scheduling/slots 
+POST /api/security/roles 
+POST /api/staff 
+POST /api/staffing/attendance 
+POST /api/staffing/heads 
+POST /api/staffing/requests 
+POST /api/staffing/requests/{id}/review 
+POST /api/staffing/roster 
+POST /api/staffing/salary/{id}/reconcile 
+POST /api/vitals @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/ward/admissions/{id}/transfer 
+POST /api/ward/beds/{id}/ready 
+POST /api/ward/medications @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+POST /api/ward/medications/{id}/administer 
+POST /api/workflow/appointments/{id}/check-in 
+POST /api/workflow/encounters/{id}/billing 
+POST /api/workflow/encounters/{id}/complete 
+POST /api/workflow/encounters/{id}/consultation 
+POST /api/workflow/encounters/{id}/start-consultation 
+POST /api/workflow/encounters/{id}/vitals 
+POST /api/workflow/walk-in 
+PUT /api/admissions/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/appointments/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/consultations/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/coverage/claims/{id}/lines 
+PUT /api/employees/{id} 
+PUT /api/encounters/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/inpatient/beds/{id} 
+PUT /api/insurance/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/inventory/{id} 
+PUT /api/invoices/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/lab-order-items/{id} 
+PUT /api/lab-orders/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/lab-tests/{id} 
+PUT /api/patient/profile 
+PUT /api/patients/{id} 
+PUT /api/radiology/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")
+PUT /api/security/roles/{name} 
+PUT /api/security/settings/{key} 
+PUT /api/vitals/{id} @org.springframework.security.access.prepost.PreAuthorize("denyAll()")

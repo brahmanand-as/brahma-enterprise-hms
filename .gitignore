@@ -1,0 +1,13 @@
+.env
+**/node_modules/
+**/target/
+**/dist/
+**/.angular/
+**/.idea/
+*.log
+
+/tools/
+/*-smoke-result.json
+
+frontend/.test-build/
+frontend/test-results/

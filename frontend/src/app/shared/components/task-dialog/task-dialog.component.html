@@ -1,0 +1,113 @@
+<div class="overlay">
+  <section
+    class="task-drawer"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="task.label"
+  >
+    <div class="drawer-heading">
+      <div>
+        <span class="eyebrow">{{ workspaceLabel }}</span>
+        <h2>{{ task.label }}</h2>
+      </div>
+      <button
+        type="button"
+        class="icon-button"
+        aria-label="Close task"
+        [disabled]="busy"
+        (click)="close.emit()"
+      >
+        ×
+      </button>
+    </div>
+    <app-notice [message]="error" kind="error"></app-notice>
+    <p *ngIf="loading" role="status">Loading current choices…</p>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <app-form-field
+          *ngFor="let field of task.fields"
+          [class.wide]="field.type === 'textarea'"
+          [field]="field"
+          [control]="form.controls.fields.controls[field.key]"
+          [options]="choices(field)"
+        ></app-form-field>
+      </div>
+      <div class="line-editor" *ngIf="task.lines">
+        <div class="panel-heading">
+          <h3>
+            {{
+              task.lineKey === "parts" ? "Payment transactions" : "Order items"
+            }}
+          </h3>
+          <button type="button" class="secondary" (click)="addLine()">
+            + Add line
+          </button>
+        </div>
+        <div
+          class="line-row"
+          *ngFor="let group of form.controls.lines.controls; let index = index"
+        >
+          <b class="line-number">{{ index + 1 }}</b>
+          <div class="form-grid">
+            <app-form-field
+              *ngFor="let field of task.lines"
+              [field]="field"
+              [control]="group.controls[field.key]"
+              [options]="choices(field)"
+            ></app-form-field
+            ><small
+              class="field-error"
+              *ngIf="group.touched && group.hasError('verifiedPayment')"
+              >Electronic payments require a transaction reference and payment
+              verification.</small
+            >
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            *ngIf="form.controls.lines.length > 1"
+            (click)="removeLine(index)"
+            aria-label="Remove line"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+      <div *ngIf="roleEditor" class="permission-grid">
+        <label *ngFor="let permission of permissions"
+          ><input
+            type="checkbox"
+            [checked]="
+              form.controls.permissions.value.includes(permission.code)
+            "
+            (change)="togglePermission(permission.code)"
+            [disabled]="permission.code === 'security.manage'"
+          /><span>{{ permission.label }}</span></label
+        >
+      </div>
+      <p class="context-note" *ngIf="task.lineKey === 'parts'">
+        Select every payment method separately. Card, UPI and bank payments
+        require a reference and verified-payment confirmation. No bank
+        transaction is initiated here.
+      </p>
+      <p
+        class="field-error"
+        *ngIf="form.touched && form.hasError('dispensingSource')"
+      >
+        Select either a final prescription or a verified IPD order.
+      </p>
+      <div class="drawer-footer">
+        <button
+          type="button"
+          class="secondary"
+          [disabled]="busy"
+          (click)="close.emit()"
+        >
+          Cancel</button
+        ><button type="submit" class="primary" [disabled]="busy || loading">
+          {{ busy ? "Saving…" : "Save & continue →" }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

@@ -1,0 +1,178 @@
+<section class="care-banner opd-banner">
+  <div>
+    <span class="care-kicker">OUTPATIENT CARE</span>
+    <h2>Every patient. A clear next step.</h2>
+    <p>A shared view of the patient journey, from check-in to completion.</p>
+  </div>
+  <div class="banner-symbol" aria-hidden="true">✚</div>
+</section>
+<div class="care-metrics" aria-label="OPD queue summary">
+  <article>
+    <span class="metric-icon amber">◷</span>
+    <div>
+      <small>Waiting</small><strong>{{ lane("WAITING").length }}</strong
+      ><span>Checked in & ready</span>
+    </div>
+  </article>
+  <article>
+    <span class="metric-icon blue">✚</span>
+    <div>
+      <small>In consultation</small
+      ><strong>{{ lane("IN_CONSULTATION").length }}</strong
+      ><span>Care in progress</span>
+    </div>
+  </article>
+  <article>
+    <span class="metric-icon teal">◴</span>
+    <div>
+      <small>Average current wait</small
+      ><strong
+        >{{ average === null ? "—" : average
+        }}<em *ngIf="average !== null"> min</em></strong
+      ><span>Among waiting patients</span>
+    </div>
+  </article>
+  <article>
+    <span class="metric-icon green">✓</span>
+    <div>
+      <small>Completed</small><strong>{{ lane("COMPLETED").length }}</strong
+      ><span>In selected period</span>
+    </div>
+  </article>
+</div>
+<section class="care-panel">
+  <div class="care-panel-head">
+    <div>
+      <h2>
+        OPD patient flow <span class="count-bubble">{{ rows.length }}</span>
+      </h2>
+      <p>Oldest check-in first · Waiting clock updates every 30 seconds</p>
+    </div>
+    <div class="segmented" aria-label="Queue view">
+      <button
+        [class.selected]="mode === 'board'"
+        [attr.aria-pressed]="mode === 'board'"
+        (click)="mode = 'board'"
+      >
+        Board</button
+      ><button
+        [class.selected]="mode === 'list'"
+        [attr.aria-pressed]="mode === 'list'"
+        (click)="mode = 'list'"
+      >
+        List
+      </button>
+    </div>
+  </div>
+  <div class="care-filters">
+    <label
+      >Visit date<input
+        type="date"
+        [(ngModel)]="day"
+        aria-label="Visit date" /></label
+    ><label
+      >Doctor<select [(ngModel)]="doctor" aria-label="Filter OPD doctor">
+        <option value="">All visible doctors</option>
+        <option *ngFor="let d of doctors">{{ d }}</option>
+      </select></label
+    ><button class="text-button" (click)="reset()">All dates & doctors</button
+    ><span class="filter-note">{{
+      context.busy
+        ? "Refreshing records…"
+        : "Use refresh above for latest status"
+    }}</span>
+  </div>
+  <div *ngIf="context.busy" class="care-loading" role="status">
+    Loading patient flow…
+  </div>
+  <ng-container *ngIf="!context.busy">
+    <div class="queue-board" *ngIf="mode === 'board'">
+      <section
+        class="queue-lane"
+        *ngFor="let laneInfo of lanes"
+        [attr.data-tone]="laneInfo.color"
+      >
+        <div class="lane-heading">
+          <span class="lane-dot"></span>
+          <h3>{{ laneInfo.label }}</h3>
+          <b>{{ lane(laneInfo.id).length }}</b>
+        </div>
+        <p class="lane-hint">{{ laneInfo.hint }}</p>
+        <article class="queue-card" *ngFor="let row of lane(laneInfo.id)">
+          <div class="queue-card-top">
+            <span class="visit-token">{{ text(row, "encounterNo") }}</span
+            ><span
+              class="wait-tag"
+              *ngIf="laneInfo.id === 'WAITING'"
+              [class.long-wait]="(minutes(row) || 0) >= 30"
+              >◷
+              {{
+                minutes(row) === null
+                  ? "Time unavailable"
+                  : minutes(row) + " min"
+              }}</span
+            >
+          </div>
+          <div class="patient-identity">
+            <span class="patient-avatar">{{ initials(name(row)) }}</span>
+            <div>
+              <h4>{{ name(row) }}</h4>
+              <small>Check-in {{ time(row) }} IST</small>
+            </div>
+          </div>
+          <p class="complaint">
+            {{ text(row, "chiefComplaint") || "No reason recorded" }}
+          </p>
+          <div class="doctor-line">
+            ✚ {{ text(row, "doctorName") || "Doctor not recorded" }}
+          </div>
+          <div class="queue-actions">
+            <button class="text-button" (click)="context.detail = row">
+              Visit details</button
+            ><button
+              *ngFor="let action of context.rowActions(row)"
+              class="care-action"
+              [disabled]="context.busy"
+              (click)="action.run()"
+            >
+              {{ action.label }} →
+            </button>
+          </div>
+        </article>
+        <div class="lane-empty" *ngIf="!lane(laneInfo.id).length">
+          <span>○</span>
+          <p>No patients in this stage</p>
+        </div>
+      </section>
+    </div>
+    <app-record-table
+      *ngIf="mode === 'list'"
+      [rows]="rows"
+      [columns]="context.columns"
+      [options]="context.options"
+      [busy]="context.busy"
+      [actions]="context.rowActions"
+    ></app-record-table>
+    <div class="care-empty" *ngIf="!rows.length">
+      <h3>No visits match this view</h3>
+      <p>
+        Try another date or select all dates. Booked appointments appear here
+        after check-in.
+      </p>
+    </div>
+    <details class="other-visits" *ngIf="other.length">
+      <summary>Other visit statuses · {{ other.length }}</summary>
+      <app-record-table
+        [rows]="other"
+        [columns]="context.columns"
+        [options]="context.options"
+        [actions]="context.rowActions"
+      ></app-record-table>
+    </details>
+  </ng-container>
+  <p class="care-footnote">
+    Wait = elapsed time since check-in for patients still waiting. The 30-minute
+    highlight is an operational reminder, not a clinical priority or triage
+    decision.
+  </p>
+</section>

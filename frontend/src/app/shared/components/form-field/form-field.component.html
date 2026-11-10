@@ -1,0 +1,31 @@
+<label [class.wide]="field.type === 'textarea'"
+  >{{ field.label }}
+  <select
+    *ngIf="field.source || field.values"
+    [attr.aria-label]="field.label"
+    [formControl]="control"
+  >
+    <option [ngValue]="null">Select {{ field.label.toLowerCase() }}</option>
+    <option *ngFor="let option of options" [ngValue]="option.id">
+      {{ option.label }}
+    </option>
+  </select>
+  <textarea
+    *ngIf="field.type === 'textarea'"
+    [attr.aria-label]="field.label"
+    [formControl]="control"
+    rows="4"
+  ></textarea>
+  <input
+    *ngIf="!field.source && !field.values && field.type !== 'textarea'"
+    [attr.aria-label]="field.label"
+    [type]="field.type || 'text'"
+    [formControl]="control"
+    [attr.step]="field.type === 'number' ? 'any' : null"
+    [attr.min]="field.type === 'number' ? 0 : null"
+    [attr.aria-invalid]="invalid"
+  />
+  <small class="field-error" *ngIf="invalid">{{
+    validationMessage
+  }}</small></label
+>

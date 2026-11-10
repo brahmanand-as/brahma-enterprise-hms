@@ -1,0 +1,102 @@
+<app-notice
+  [message]="state.message"
+  (dismiss)="state.message = ''"
+></app-notice
+><app-notice
+  [message]="state.error"
+  kind="error"
+  (dismiss)="state.error = ''"
+></app-notice>
+<div class="task-toolbar">
+  <div class="actions">
+    <button
+      type="button"
+      *ngFor="let task of state.tasks"
+      class="primary"
+      (click)="state.begin(task)"
+    >
+      + {{ task.label }}</button
+    ><button
+      type="button"
+      *ngIf="state.active === 'myappointments'"
+      class="secondary"
+      (click)="state.fee()"
+    >
+      Complete demo registration fee
+    </button>
+  </div>
+  <div class="actions">
+    <label class="search-box"
+      ><span>⌕</span
+      ><input
+        [formControl]="search"
+        placeholder="Search this workspace…"
+        aria-label="Search records" /></label
+    ><button
+      type="button"
+      class="icon-button"
+      (click)="state.refresh()"
+      title="Refresh"
+    >
+      ↻
+    </button>
+  </div>
+</div>
+<p class="context-note" *ngIf="state.active === 'myappointments'">
+  New patients complete the simulated registration fee once before booking. This
+  demo payment is excluded from hospital revenue. For provisional bookings or
+  assistance, contact reception.
+</p>
+<p class="context-note" *ngIf="state.active === 'laboratory'">
+  Order → Billing paid → Sample collection → Processing → Result → Pathologist
+  verification → Completion
+</p>
+<p class="context-note" *ngIf="state.active === 'wardstock'">
+  Ward adjustment type
+  <select [(ngModel)]="state.wardAction">
+    <option>RETURN</option>
+    <option>WASTE</option>
+    <option>DAMAGE</option>
+  </select>
+</p>
+<p class="context-note" *ngIf="state.active === 'batches'">
+  Stock uses first-expiring, first-out allocation.
+  <label
+    >Movement type
+    <select [(ngModel)]="state.batchAction">
+      <option>WASTE</option>
+      <option>DAMAGE</option>
+      <option>WARD_RECEIPT</option>
+    </select></label
+  >
+</p>
+<ng-container *ngIf="customView; else table"
+  ><ng-container
+    *ngComponentOutlet="customView; inputs: { context: state }"
+  ></ng-container></ng-container
+><ng-template #table
+  ><app-record-table
+    [rows]="state.filtered"
+    [columns]="state.columns"
+    [options]="state.options"
+    [busy]="state.busy"
+    [actions]="state.rowActions"
+  ></app-record-table
+></ng-template>
+<app-task-dialog
+  *ngIf="state.task as task"
+  [task]="task"
+  [workspaceLabel]="state.workspace.label"
+  [options]="state.options"
+  [permissions]="state.permissionCatalog"
+  [roleEditor]="state.active === 'roles'"
+  [busy]="state.busy"
+  [loading]="state.optionsLoading"
+  [error]="state.taskError"
+  (close)="state.closeTask()"
+  (save)="state.submit($event)"
+></app-task-dialog>
+<app-record-details
+  [detail]="state.detail"
+  (close)="state.detail = null"
+></app-record-details>

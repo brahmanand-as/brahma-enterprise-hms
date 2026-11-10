@@ -1,0 +1,73 @@
+<section class="panel">
+  <div class="panel-heading">
+    <div>
+      <h2>Ward availability</h2>
+      <p>{{ bedRows.length }} beds in view</p>
+    </div>
+    <div class="actions">
+      <select [(ngModel)]="bedWard">
+        <option value="">All wards</option>
+        <option *ngFor="let ward of wards">{{ ward }}</option></select
+      ><select [(ngModel)]="bedFloor">
+        <option value="">All floors</option>
+        <option *ngFor="let floor of floors">{{ floor }}</option></select
+      ><select [(ngModel)]="bedType">
+        <option value="">All types</option>
+        <option *ngFor="let type of bedTypes">{{ type }}</option></select
+      ><select [(ngModel)]="bedStatus">
+        <option value="">All statuses</option>
+        <option
+          *ngFor="
+            let status of [
+              'AVAILABLE',
+              'RESERVED',
+              'OCCUPIED',
+              'CLEANING',
+              'MAINTENANCE',
+              'BLOCKED',
+            ]
+          "
+        >
+          {{ status }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="bed-legend">
+    <span><i class="available"></i>Available · {{ bedCount("AVAILABLE") }}</span
+    ><span><i class="occupied"></i>Occupied · {{ bedCount("OCCUPIED") }}</span
+    ><span><i class="cleaning"></i>Cleaning</span
+    ><span><i class="reserved"></i>Reserved / blocked</span>
+  </div>
+  <div class="bed-grid">
+    <article *ngFor="let b of bedRows" [attr.data-status]="b.status">
+      <div>
+        <small>{{ b.ward }} · Floor {{ b.floor_name }}</small
+        ><span>⌂</span>
+      </div>
+      <h3>{{ b.bed_no }}</h3>
+      <p *ngIf="b.patient_name">{{ b.current_mrn }} · {{ b.patient_name }}</p>
+      <p>{{ b.bed_type }} · {{ b.daily_rate | currency: "INR" }} / day</p>
+      <span class="status">{{ label(b.status) }}</span
+      ><button (click)="context.detail = b">View details →</button
+      ><button
+        *ngIf="
+          context.has('ipd.manage') && !b.occupied && b.status !== 'RESERVED'
+        "
+        (click)="edit(b)"
+      >
+        Edit bed / rate →</button
+      ><button
+        *ngIf="context.has('ipd.manage') && !b.occupied"
+        (click)="manage(b)"
+      >
+        Manage bed →</button
+      ><button
+        *ngIf="context.has('nursing.write') && b.status === 'CLEANING'"
+        (click)="context.execute('Bed ready', 'ward/beds/' + b.id + '/ready')"
+      >
+        Mark cleaned →
+      </button>
+    </article>
+  </div>
+</section>

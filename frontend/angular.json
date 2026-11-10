@@ -1,0 +1,71 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "projects": {
+    "arogya": {
+      "projectType": "application",
+      "sourceRoot": "src",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/arogya",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "styles": [
+              "src/styles.css"
+            ],
+            "assets": [
+              "src/assets"
+            ]
+          },
+          "defaultConfiguration": "production",
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "arogya:build",
+            "proxyConfig": "proxy.conf.json"
+          },
+          "configurations": {
+            "development": {
+              "browserTarget": "arogya:build:development"
+            },
+            "production": {
+              "browserTarget": "arogya:build:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      },
+      "root": ""
+    }
+  },
+  "cli": {
+    "analytics": "734f1f02-1bb4-4eb4-b475-5aace2b9f5ce"
+  }
+}

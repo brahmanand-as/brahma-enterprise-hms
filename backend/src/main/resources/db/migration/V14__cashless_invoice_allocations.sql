@@ -1,0 +1,1 @@
+CREATE TABLE insurance_invoice_allocations(id BIGINT PRIMARY KEY AUTO_INCREMENT,claim_id BIGINT NOT NULL,invoice_id BIGINT NOT NULL,amount DECIMAL(12,2) NOT NULL,settled DECIMAL(12,2) NOT NULL DEFAULT 0,UNIQUE KEY uk_claim_invoice(claim_id,invoice_id),FOREIGN KEY(claim_id) REFERENCES insurance_claims(id),FOREIGN KEY(invoice_id) REFERENCES invoices(id));

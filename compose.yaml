@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: arogya_hms_enterprise
+      MYSQL_USER: arogya
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - enterprise_mysql:/var/lib/mysql
+    healthcheck:
+      test: [CMD-SHELL, 'mysqladmin ping -h localhost -u root -p"$$MYSQL_ROOT_PASSWORD"']
+      interval: 10s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      DB_HOST: mysql
+      DB_USERNAME: arogya
+      DB_PASSWORD: ${DB_PASSWORD}
+      HMS_JWT_SECRET: ${HMS_JWT_SECRET:?Set HMS_JWT_SECRET to at least 32 bytes}
+      HMS_ADMIN_PASSWORD: ${HMS_ADMIN_PASSWORD:?Set HMS_ADMIN_PASSWORD to at least 12 characters}
+      HMS_CORS_ORIGIN: http://localhost:4200
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      HMS_DEMO_PASSWORD: ${HMS_DEMO_PASSWORD:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - '8080:8080'
+  frontend:
+    build: ./frontend
+    ports:
+      - '4200:80'
+    depends_on:
+      - backend
+volumes:
+  enterprise_mysql:

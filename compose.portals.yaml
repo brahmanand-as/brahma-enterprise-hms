@@ -1,0 +1,37 @@
+# Use with: docker compose -f compose.yaml -f compose.portals.yaml up --build
+# Separate origins isolate portal browser sessions. Every origin proxies /api locally.
+services:
+  frontend:
+    image: arogya-enterprise-ui:local
+  admin-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4301:80']
+    depends_on: [backend, frontend]
+  doctor-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4302:80']
+    depends_on: [backend, frontend]
+  nurse-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4303:80']
+    depends_on: [backend, frontend]
+  reception-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4304:80']
+    depends_on: [backend, frontend]
+  laboratory-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4305:80']
+    depends_on: [backend, frontend]
+  pharmacy-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4306:80']
+    depends_on: [backend, frontend]
+  hr-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4307:80']
+    depends_on: [backend, frontend]
+  patient-portal:
+    image: arogya-enterprise-ui:local
+    ports: ['4308:80']
+    depends_on: [backend, frontend]
